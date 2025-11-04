@@ -14,8 +14,15 @@ class ProfileController extends Controller
      */
     public function index()
     {
-		$profiles = Profile::with('user')->paginate(10);
-		return response()->json($profiles);
+        // Si es una petición AJAX/API, devolver JSON
+        if(request()->expectsJson() || request()->ajax()) {
+            $profiles = Profile::with('user')->paginate(10);
+            return response()->json($profiles);
+        }
+
+        // Para peticiones web normales, devolver vista
+        $profiles = Profile::with('user')->paginate(12);
+        return view('profiles.index', compact('profiles'));
     }
 
     /**
@@ -41,15 +48,23 @@ class ProfileController extends Controller
      */
     public function show(Profile $profile)
     {
-		return response()->json($profile->load('user'));
+        // Si es una petición AJAX/API, devolver JSON
+        if(request()->expectsJson() || request()->ajax()) {
+            return response()->json($profile->load('user'));
+        }
+
+        // Para peticiones web normales, devolver vista
+        $profile->load('user');
+        return view('profiles.show', compact('profile'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Profile $profile)
+    public function edit()
     {
-        //
+        $profile = auth()->user()->profile;
+        return view('profiles.edit', compact('profile'));
     }
 
     /**
