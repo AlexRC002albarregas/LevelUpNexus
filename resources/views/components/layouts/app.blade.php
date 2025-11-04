@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ $title ?? 'LevelUp Nexus' }}</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		body { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+		.glow { box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
+		.glow-sm { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+		.card-hover { transition: all 0.3s ease; }
+		.card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); }
+		@keyframes pulse-glow {
+			0%, 100% { box-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
+			50% { box-shadow: 0 0 20px rgba(236, 72, 153, 1); }
+		}
+		.notification-badge { animation: pulse-glow 2s ease-in-out infinite; }
+	</style>
+</head>
+<body class="min-h-screen text-white">
+	<header class="backdrop-blur-lg bg-slate-900/80 border-b border-purple-500/30 sticky top-0 z-50">
+		<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+			<a href="{{ route('landing') }}" class="font-bold text-2xl bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+				<i class="fas fa-gamepad"></i> LevelUp Nexus
+			</a>
+			<nav class="flex items-center gap-6">
+				<a href="{{ route('landing') }}" class="hover:text-purple-400 transition"><i class="fas fa-home"></i> Inicio</a>
+				@auth
+					<a href="{{ route('posts.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-newspaper"></i> Publicaciones</a>
+					<a href="{{ route('friends.index') }}" class="hover:text-purple-400 transition relative">
+						<i class="fas fa-user-friends"></i> Amigos
+						@php
+							$notifCount = auth()->user()->notificationsCount();
+						@endphp
+						@if($notifCount > 0)
+							<span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center notification-badge">{{ $notifCount }}</span>
+						@endif
+					</a>
+					<a href="{{ route('games.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-trophy"></i> Mis Juegos</a>
+					<a href="{{ route('groups.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-users"></i> Grupos</a>
+					
+					<!-- Menú de usuario -->
+					<div class="flex items-center gap-3 ml-4 pl-4 border-l border-purple-500/30">
+						<a href="{{ route('account.edit') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-purple-500/20 transition group">
+							<div class="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold border-2 border-purple-400 glow-sm overflow-hidden">
+								@if(auth()->user()->avatar)
+									<img src="{{ asset('storage/' . auth()->user()->avatar) }}" class="w-full h-full object-cover" alt="{{ auth()->user()->name }}">
+								@else
+									{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+								@endif
+							</div>
+							<span class="font-semibold group-hover:text-purple-300">{{ auth()->user()->name }}</span>
+						</a>
+						<form method="POST" action="{{ route('auth.logout') }}">
+							@csrf
+							<button class="px-3 py-2 rounded-lg bg-red-600/20 border border-red-500 hover:bg-red-600/40 transition" title="Cerrar sesión">
+								<i class="fas fa-sign-out-alt"></i>
+							</button>
+						</form>
+					</div>
+				@else
+					<a href="{{ route('auth.login') }}" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 glow-sm transition"><i class="fas fa-sign-in-alt"></i> Entrar</a>
+					<a href="{{ route('auth.register') }}" class="px-4 py-2 rounded-lg border-2 border-purple-500 hover:bg-purple-500/20 transition"><i class="fas fa-user-plus"></i> Registro</a>
+				@endauth
+			</nav>
+		</div>
+	</header>
+
+	<main class="max-w-7xl mx-auto px-4 py-8">
+		@if (session('status'))
+			<div class="mb-4 p-4 rounded-lg bg-green-500/20 border border-green-500 text-green-200 glow-sm"><i class="fas fa-check-circle"></i> {{ session('status') }}</div>
+		@endif
+		@if ($errors->any())
+			<div class="mb-4 p-4 rounded-lg bg-red-500/20 border border-red-500 text-red-200">
+				<ul class="list-disc list-inside">
+					@foreach ($errors->all() as $error)
+						<li><i class="fas fa-exclamation-circle"></i> {{ $error }}</li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
+		{{ $slot }}
+	</main>
+
+	<footer class="border-t border-purple-500/30 bg-slate-900/50 backdrop-blur-lg">
+		<div class="max-w-7xl mx-auto px-4 py-6 text-sm text-purple-300">
+			<i class="fas fa-code"></i> © {{ date('Y') }} LevelUp Nexus - Plataforma Gamer
+		</div>
+	</footer>
+
+	<script>
+		// Auto-ocultar notificaciones después de 4 segundos
+		document.addEventListener('DOMContentLoaded', function() {
+			const notifications = document.querySelectorAll('[class*="bg-green-500/20"], [class*="bg-red-500/20"]');
+			
+			notifications.forEach(notification => {
+				// Añadir animación de fade out
+				setTimeout(() => {
+					notification.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+					notification.style.opacity = '0';
+					notification.style.transform = 'translateY(-20px)';
+					
+					// Eliminar del DOM después de la animación
+					setTimeout(() => {
+						notification.remove();
+					}, 500);
+				}, 4000); // 4 segundos
+			});
+		});
+	</script>
+</body>
+</html>
+
+
