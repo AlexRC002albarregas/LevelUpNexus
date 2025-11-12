@@ -2,22 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'landing')->name('landing');
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('landing');
 
-// Ruta de prueba RAWG (temporal)
-Route::get('/test-rawg', [\App\Http\Controllers\RawgController::class, 'test'])->name('test.rawg');
-
-// Prueba de autenticación
-Route::get('/test-auth', function(){
-    if(auth()->check()) {
-        return response()->json([
-            'authenticated' => true,
-            'user' => auth()->user()->name,
-            'id' => auth()->id()
-        ]);
-    }
-    return response()->json(['authenticated' => false]);
-});
 
 // Auth web
 Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('auth.login');
@@ -112,7 +98,9 @@ Route::middleware('auth:web')->group(function(){
     Route::delete('/groups/{group}', [\App\Http\Controllers\GroupController::class, 'destroy'])->name('groups.destroy');
     Route::post('/groups/{group}/join', [\App\Http\Controllers\GroupController::class, 'join'])->name('groups.join');
     Route::post('/groups/{group}/leave', [\App\Http\Controllers\GroupController::class, 'leave'])->name('groups.leave');
-    
+    Route::post('/groups/{group}/members/{user}/change-role', [\App\Http\Controllers\GroupController::class, 'changeMemberRole'])->name('groups.changeMemberRole');
+    Route::delete('/groups/{group}/members/{user}/kick', [\App\Http\Controllers\GroupController::class, 'kickMember'])->name('groups.kickMember');
+
     // Invitaciones a grupos
     Route::post('/groups/{group}/invitations', [\App\Http\Controllers\GroupInvitationController::class, 'store'])->name('group-invitations.store');
     Route::post('/group-invitations/{groupInvitation}/accept', [\App\Http\Controllers\GroupInvitationController::class, 'accept'])->name('group-invitations.accept');
@@ -124,6 +112,8 @@ Route::middleware('auth:web')->group(function(){
 // Panel admin (listados básicos)
 Route::middleware(['auth','role:admin'])->group(function(){
     Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'index'])->name('admin.index');
+    Route::get('/admin/users', [\App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::patch('/admin/users/{user}/toggle', [\App\Http\Controllers\Admin\UserManagementController::class, 'toggle'])->name('admin.users.toggle');
 });
 
 /* Fin de rutas */

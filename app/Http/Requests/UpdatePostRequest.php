@@ -24,7 +24,13 @@ class UpdatePostRequest extends FormRequest
         return [
             'content' => ['required', 'string', 'max:5000'],
             'group_id' => ['nullable', 'exists:groups,id'],
-            'visibility' => ['nullable', 'in:public,private'],
+            'game_id' => ['nullable', 'exists:games,id'],
+            'rawg_game_id' => ['nullable', 'integer'],
+            'game_title' => ['nullable', 'string', 'max:255'],
+            'game_image' => ['nullable', 'string', 'max:500'],
+            'game_platform' => ['nullable', 'string', 'max:255'],
+            'visibility' => ['nullable', 'in:public,private,group'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'], // 5MB máximo
         ];
     }
 }

@@ -27,6 +27,18 @@ class AccountController extends Controller
             'avatar' => ['nullable','image','mimes:jpeg,jpg,png,gif,webp','max:2048'],
             'bio' => ['nullable','string','max:500'],
             'password' => ['nullable','string','min:8','confirmed'],
+        ], [
+            'name.required' => 'El nombre es obligatorio',
+            'name.max' => 'El nombre no puede exceder los 255 caracteres',
+            'email.required' => 'El correo electrónico es obligatorio',
+            'email.email' => 'Debes proporcionar un correo electrónico válido',
+            'email.unique' => 'Este correo electrónico ya está en uso',
+            'avatar.image' => 'El archivo debe ser una imagen',
+            'avatar.mimes' => 'El avatar debe ser de tipo: jpeg, jpg, png, gif o webp',
+            'avatar.max' => 'El avatar no puede ser mayor de 2MB',
+            'bio.max' => 'La biografía no puede exceder los 500 caracteres',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide',
         ]);
         
         $user = auth()->user();
@@ -67,6 +79,10 @@ class AccountController extends Controller
         $validated = $request->validate([
             'email' => ['required','email'],
             'password' => ['required','string'],
+        ], [
+            'email.required' => 'Debes confirmar tu correo electrónico',
+            'email.email' => 'Debes proporcionar un correo electrónico válido',
+            'password.required' => 'Debes confirmar tu contraseña',
         ]);
         
         $user = auth()->user();

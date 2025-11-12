@@ -31,14 +31,39 @@ class RawgController extends Controller
         try {
             $query = $request->get('q', '');
             if(strlen($query) < 2){
-                return response()->json(['results' => []]);
+                return response()->json(['games' => []]);
             }
+            
             $data = $this->rawgService->searchGames($query, 1, 10);
-            return response()->json($data);
+            
+            // Adaptar formato para el frontend
+            $games = [];
+            if(isset($data['results'])) {
+                foreach($data['results'] as $game) {
+                    $platforms = [];
+                    if(isset($game['platforms'])) {
+                        foreach($game['platforms'] as $platform) {
+                            $platforms[] = $platform['platform']['name'];
+                        }
+                    }
+                    
+                    $games[] = [
+                        'id' => $game['id'],
+                        'name' => $game['name'],
+                        'image' => $game['background_image'] ?? null,
+                        'background_image' => $game['background_image'] ?? null, // Para compatibilidad
+                        'platforms' => $platforms,
+                        'released' => $game['released'] ?? null,
+                        'rating' => $game['rating'] ?? null,
+                    ];
+                }
+            }
+            
+            return response()->json(['games' => $games]);
         } catch(\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),
-                'results' => []
+                'games' => []
             ], 500);
         }
     }

@@ -35,4 +35,8 @@ return [
         'key' => env('RAWG_API_KEY'),
     ],
 
+    'newsapi' => [
+        'key' => env('NEWS_API_KEY'),
+    ],
+
 ];

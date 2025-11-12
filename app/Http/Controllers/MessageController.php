@@ -38,7 +38,10 @@ class MessageController extends Controller
      */
     public function store(Request $request, User $friend)
     {
-        $request->validate(['content' => 'required|string|max:1000']);
+        $request->validate(['content' => 'required|string|max:1000'], [
+            'content.required' => 'El mensaje no puede estar vacío',
+            'content.max' => 'El mensaje no puede exceder los 1000 caracteres',
+        ]);
         
         // Verificar que son amigos
         $areFriends = Friendship::where(function($q) use ($friend){

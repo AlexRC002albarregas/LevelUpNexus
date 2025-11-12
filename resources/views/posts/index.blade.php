@@ -1,17 +1,19 @@
 <x-layouts.app :title="'Publicaciones - LevelUp Nexus'">
-	<div class="max-w-4xl mx-auto">
-		<div class="flex items-center justify-between mb-8">
+	<div class="max-w-7xl mx-auto">
+		<div class="flex items-center justify-between mb-8 w-full gap-4">
 			<h1 class="text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
 				<i class="fas fa-newspaper"></i> Feed de Publicaciones
 			</h1>
-			<a href="{{ route('posts.create') }}" class="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-bold text-white transition glow-sm">
+			<a href="{{ route('posts.create') }}" class="ml-auto px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-bold text-white transition glow-sm">
 				<i class="fas fa-plus"></i> Nueva Publicación
 			</a>
 		</div>
 
-		<div class="space-y-6">
+		<div class="space-y-12">
 			@forelse($posts as $post)
-				<div class="p-6 rounded-xl bg-slate-800/50 border border-purple-500/30 backdrop-blur-sm card-hover">
+				<div class="max-w-3xl mx-auto w-full">
+					<div class="p-1 sm:p-2">
+						<div class="p-6 rounded-2xl bg-slate-800/60 border border-purple-500/40 backdrop-blur-sm card-hover shadow-xl shadow-purple-900/20">
 					<div class="flex items-start justify-between mb-4">
 						<div class="flex items-center gap-3">
 							<a href="{{ route('users.show', $post->user) }}" class="flex items-center gap-3 hover:opacity-80 transition">
@@ -26,9 +28,6 @@
 									<div class="font-bold text-purple-200">{{ $post->user->name }}</div>
 									<div class="text-sm text-purple-400">
 										<i class="fas fa-clock"></i> {{ $post->created_at->diffForHumans() }}
-										@if($post->group)
-											· <i class="fas fa-users"></i> {{ $post->group->name }}
-										@endif
 									</div>
 								</div>
 							</a>
@@ -49,7 +48,43 @@
 						@endif
 					</div>
 
+					@if($post->rawg_game_id || $post->game)
+						@php
+							// Priorizar datos de RAWG si existen
+							$gameTitle = $post->game_title ?? $post->game->title ?? 'Juego';
+							$gameImage = $post->game_image ?? $post->game->rawg_image ?? null;
+							$gamePlatform = $post->game_platform ?? $post->game->platform ?? null;
+						@endphp
+						<div class="mb-4 p-3 rounded-lg bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 flex items-center gap-3">
+							@if($gameImage)
+								<img src="{{ $gameImage }}" alt="{{ $gameTitle }}" class="w-16 h-16 rounded-lg object-cover">
+							@endif
+							<div class="flex-1">
+								<div class="text-sm text-purple-300 mb-1">
+									<i class="fas fa-gamepad"></i> Hablando sobre:
+								</div>
+								<div class="font-bold text-purple-100">{{ $gameTitle }}</div>
+								@if($gamePlatform)
+									<div class="text-xs text-purple-400">
+										<i class="fas fa-desktop"></i> {{ $gamePlatform }}
+									</div>
+								@endif
+							</div>
+						</div>
+					@endif
+
 					<div class="text-purple-100 mb-4 whitespace-pre-wrap">{{ $post->content }}</div>
+
+					@if($post->image)
+						<div class="mb-4">
+							<img 
+								src="{{ asset('storage/' . $post->image) }}" 
+								alt="Imagen de la publicación" 
+								class="max-w-md rounded-lg border border-purple-500/30 cursor-pointer hover:opacity-80 transition"
+								onclick="openImageModal('{{ asset('storage/' . $post->image) }}')"
+							>
+						</div>
+					@endif
 
 					<!-- Reacciones -->
 					<div class="mb-4 pt-4 border-t border-purple-500/30">
@@ -57,43 +92,40 @@
 							$userReaction = $post->reactions->where('user_id', auth()->id())->first();
 						@endphp
 						<div class="flex items-center gap-2 mb-3">
-							<form method="POST" action="{{ route('reactions.toggle', $post) }}" class="inline">
+							<form method="POST" action="{{ route('reactions.toggle', $post) }}" class="inline reaction-form" data-post-id="{{ $post->id }}">
 								@csrf
 								<input type="hidden" name="type" value="like">
-								<button type="submit" class="px-3 py-1.5 rounded-lg {{ $userReaction && $userReaction->type === 'like' ? 'bg-blue-600/50' : 'bg-purple-600/30' }} hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition">
+								<button type="submit" class="{{ $userReaction && $userReaction->type === 'like' ? 'reaction-btn px-3 py-1.5 rounded-lg bg-blue-600/50 border border-purple-500/50 text-purple-100 text-xs font-semibold transition' : 'reaction-btn px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition' }}" data-post-id="{{ $post->id }}" data-reaction-type="like" data-default-class="reaction-btn px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition" data-active-class="reaction-btn px-3 py-1.5 rounded-lg bg-blue-600/50 border border-purple-500/50 text-purple-100 text-xs font-semibold transition">
 									<i class="fas fa-thumbs-up"></i> Like
 								</button>
 							</form>
-							<form method="POST" action="{{ route('reactions.toggle', $post) }}" class="inline">
+							<form method="POST" action="{{ route('reactions.toggle', $post) }}" class="inline reaction-form" data-post-id="{{ $post->id }}">
 								@csrf
 								<input type="hidden" name="type" value="love">
-								<button type="submit" class="px-3 py-1.5 rounded-lg {{ $userReaction && $userReaction->type === 'love' ? 'bg-pink-600/50' : 'bg-purple-600/30' }} hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition">
-									<i class="fas fa-heart"></i> Love
-								</button>
-							</form>
-							<form method="POST" action="{{ route('reactions.toggle', $post) }}" class="inline">
-								@csrf
-								<input type="hidden" name="type" value="haha">
-								<button type="submit" class="px-3 py-1.5 rounded-lg {{ $userReaction && $userReaction->type === 'haha' ? 'bg-yellow-600/50' : 'bg-purple-600/30' }} hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition">
-									<i class="fas fa-laugh"></i> Haha
-								</button>
-							</form>
-							@if($post->reactions->count() > 0)
-								<div class="ml-2 text-xs text-purple-400">
-									@foreach($post->reactions->groupBy('type') as $type => $reactions)
-										<span class="mr-2">
-											{{ $reactions->count() }} 
-											<i class="fas fa-{{ $type === 'like' ? 'thumbs-up' : ($type === 'love' ? 'heart' : ($type === 'haha' ? 'laugh' : 'thumbs-down')) }}"></i>
-										</span>
-									@endforeach
-								</div>
-							@endif
+								<button type="submit" class="{{ $userReaction && $userReaction->type === 'love' ? 'reaction-btn px-3 py-1.5 rounded-lg bg-pink-600/50 border border-purple-500/50 text-purple-100 text-xs font-semibold transition' : 'reaction-btn px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition' }}" data-post-id="{{ $post->id }}" data-reaction-type="love" data-default-class="reaction-btn px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition" data-active-class="reaction-btn px-3 py-1.5 rounded-lg bg-pink-600/50 border border-purple-500/50 text-purple-100 text-xs font-semibold transition">
+								<i class="fas fa-heart"></i> Love
+							</button>
+						</form>
+						<form method="POST" action="{{ route('reactions.toggle', $post) }}" class="inline reaction-form" data-post-id="{{ $post->id }}">
+							@csrf
+							<input type="hidden" name="type" value="haha">
+							<button type="submit" class="{{ $userReaction && $userReaction->type === 'haha' ? 'reaction-btn px-3 py-1.5 rounded-lg bg-yellow-600/50 border border-purple-500/50 text-purple-900 text-xs font-semibold transition' : 'reaction-btn px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition' }}" data-post-id="{{ $post->id }}" data-reaction-type="haha" data-default-class="reaction-btn px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-200 text-xs font-semibold transition" data-active-class="reaction-btn px-3 py-1.5 rounded-lg bg-yellow-600/50 border border-purple-500/50 text-purple-900 text-xs font-semibold transition">
+								<i class="fas fa-laugh"></i> Haha
+							</button>
+						</form>
+						<div class="ml-2 text-xs text-purple-400" data-reaction-summary="{{ $post->id }}">
+							@foreach($post->reactions->groupBy('type') as $type => $reactions)
+								<span class="mr-2" data-reaction-summary-item="{{ $type }}">
+									{{ $reactions->count() }}
+									<i class="fas fa-{{ $type === 'like' ? 'thumbs-up' : ($type === 'love' ? 'heart' : ($type === 'haha' ? 'laugh' : 'thumbs-down')) }}"></i>
+								</span>
+							@endforeach
 						</div>
 					</div>
 
 					<!-- Formulario de comentario -->
 					<div class="mb-4 pb-4 border-b border-purple-500/30">
-						<form method="POST" action="{{ route('comments.store') }}" class="flex gap-2">
+						<form method="POST" action="{{ route('comments.store') }}" class="flex gap-2 comment-form" data-post-id="{{ $post->id }}" data-comments-limit="3">
 							@csrf
 							<input type="hidden" name="post_id" value="{{ $post->id }}">
 							<input type="hidden" name="from_index" value="1">
@@ -102,12 +134,14 @@
 								name="content" 
 								required 
 								placeholder="Escribe un comentario..."
+								data-comment-input="{{ $post->id }}"
 								class="flex-1 bg-slate-900 border border-purple-500/50 rounded-lg px-4 py-2 text-white placeholder-purple-400/50 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
 							>
 							<button type="submit" class="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-bold text-white transition text-sm">
 								<i class="fas fa-paper-plane"></i>
 							</button>
 						</form>
+						<p class="text-red-400 text-xs mt-1 hidden" data-comment-error="{{ $post->id }}"></p>
 						@error('content')
 							@if(request()->has('post_id') && request()->post_id == $post->id)
 								<p class="text-red-400 text-xs mt-1"><i class="fas fa-exclamation-circle"></i> {{ $message }}</p>
@@ -117,16 +151,16 @@
 
 					<!-- Comentarios recientes -->
 					@if($post->comments->count() > 0)
-						<div class="mb-4">
-							<div class="text-xs text-purple-400 mb-2">
-								<i class="fas fa-comments"></i> {{ $post->comments->count() }} comentario{{ $post->comments->count() !== 1 ? 's' : '' }}
-								@if($post->comments->count() > 3)
-									· <a href="{{ route('posts.show', $post) }}" class="hover:text-purple-300">Ver todos</a>
-								@endif
+						<div class="mb-4" data-comments-wrapper="{{ $post->id }}">
+							<div class="text-xs text-purple-400 mb-2" data-comment-summary="{{ $post->id }}">
+								<i class="fas fa-comments"></i> 
+								<span data-comment-count="{{ $post->id }}">{{ $post->comments->count() }}</span> 
+								<span data-comment-label="{{ $post->id }}" data-singular="comentario" data-plural="comentarios">{{ $post->comments->count() === 1 ? 'comentario' : 'comentarios' }}</span>
+								<span class="{{ $post->comments->count() > 3 ? '' : 'hidden' }}" data-view-all="{{ $post->id }}"> · <a href="{{ route('posts.show', $post) }}" class="hover:text-purple-300">Ver todos</a></span>
 							</div>
-							<div class="space-y-2">
+							<div class="space-y-2" data-comments-list="{{ $post->id }}" data-comment-layout="compact" data-comments-limit="3">
 								@foreach($post->comments->take(3) as $comment)
-									<div class="flex items-start gap-2 text-sm">
+									<div class="flex items-start gap-2 text-sm" data-comment-item>
 										<a href="{{ route('users.show', $comment->user) }}" class="flex-shrink-0">
 											<div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs border border-purple-400 overflow-hidden">
 												@if($comment->user->avatar)
@@ -141,9 +175,9 @@
 												<a href="{{ route('users.show', $comment->user) }}" class="font-semibold text-purple-200 hover:text-purple-100 text-xs">
 													{{ $comment->user->name }}
 												</a>
-												<span class="text-purple-300 ml-2">{{ $comment->content }}</span>
+												<span class="text-purple-300 ml-2" data-comment-content>{{ $comment->content }}</span>
 											</div>
-											<div class="text-xs text-purple-400 mt-0.5">{{ $comment->created_at->diffForHumans() }}</div>
+											<div class="text-xs text-purple-400 mt-0.5" data-comment-date>{{ $comment->created_at->diffForHumans() }}</div>
 										</div>
 										@if(auth()->id() === $comment->user_id || auth()->id() === $post->user_id)
 											<button 
@@ -159,16 +193,31 @@
 								@endforeach
 							</div>
 						</div>
+					@else
+						<div class="mb-4" data-comments-wrapper="{{ $post->id }}">
+							<div class="text-xs text-purple-400 mb-2" data-comment-summary="{{ $post->id }}">
+								<i class="fas fa-comments"></i> 
+								<span data-comment-count="{{ $post->id }}">0</span> 
+								<span data-comment-label="{{ $post->id }}" data-singular="comentario" data-plural="comentarios">comentarios</span>
+								<span class="hidden" data-view-all="{{ $post->id }}"> · <a href="{{ route('posts.show', $post) }}" class="hover:text-purple-300">Ver todos</a></span>
+							</div>
+							<div class="space-y-2" data-comments-list="{{ $post->id }}" data-comment-layout="compact" data-comments-limit="3"></div>
+							<p class="text-purple-400 text-sm italic" data-no-comments="{{ $post->id }}">
+								<i class="fas fa-comment-slash"></i> Sé el primero en comentar.
+							</p>
+						</div>
 					@endif
 
-					<div class="flex items-center justify-between pt-4 border-t border-purple-500/30">
-						<div class="flex items-center gap-4 text-sm text-purple-400">
-							<span><i class="fas fa-heart"></i> {{ $post->reactions->count() }} reacciones</span>
-							<span><i class="fas fa-comment"></i> {{ $post->comments->count() }} comentarios</span>
+							<div class="flex items-center justify-between pt-4 border-t border-purple-500/30">
+								<div class="flex items-center gap-4 text-sm text-purple-400">
+									<span><i class="fas fa-heart"></i> <span data-reaction-total="{{ $post->id }}">{{ $post->reactions->count() }}</span> reacciones</span>
+									<span><i class="fas fa-comment"></i> <span data-comment-count="{{ $post->id }}">{{ $post->comments->count() }}</span> <span data-comment-label="{{ $post->id }}" data-singular="comentario" data-plural="comentarios">{{ $post->comments->count() === 1 ? 'comentario' : 'comentarios' }}</span></span>
+								</div>
+								<a href="{{ route('posts.show', $post) }}" class="px-4 py-2 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-300 text-sm font-semibold transition">
+									<i class="fas fa-eye"></i> Ver completo
+								</a>
+							</div>
 						</div>
-						<a href="{{ route('posts.show', $post) }}" class="px-4 py-2 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-purple-300 text-sm font-semibold transition">
-							<i class="fas fa-eye"></i> Ver completo
-						</a>
 					</div>
 				</div>
 			@empty
@@ -185,6 +234,26 @@
 
 		<div class="mt-8">
 			{{ $posts->links() }}
+		</div>
+	</div>
+
+	<!-- Modal de Imagen -->
+	<div id="imageModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[200] p-4" onclick="closeImageModal()">
+		<div class="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center">
+			<button 
+				type="button" 
+				onclick="closeImageModal()" 
+				class="absolute top-4 right-4 w-12 h-12 rounded-full bg-red-600 hover:bg-red-700 text-white transition flex items-center justify-center z-10 glow"
+			>
+				<i class="fas fa-times text-xl"></i>
+			</button>
+			<img 
+				id="modalImage" 
+				src="" 
+				alt="Imagen ampliada" 
+				class="max-w-full max-h-full object-contain rounded-lg"
+				onclick="event.stopPropagation()"
+			>
 		</div>
 	</div>
 
@@ -232,6 +301,25 @@
 	</div>
 
 	<script>
+		// Modal de imagen
+		function openImageModal(imageSrc) {
+			document.getElementById('modalImage').src = imageSrc;
+			document.getElementById('imageModal').classList.remove('hidden');
+			document.body.style.overflow = 'hidden';
+		}
+
+		function closeImageModal() {
+			document.getElementById('imageModal').classList.add('hidden');
+			document.body.style.overflow = 'auto';
+		}
+
+		// Cerrar modal con tecla ESC
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape') {
+				closeImageModal();
+			}
+		});
+
 		// Modal de eliminar comentario
 		let deleteCommentId = null;
 		let deleteCommentPostId = null;
@@ -264,4 +352,9 @@
 			}
 		}
 	</script>
+
+@push('scripts')
+	@include('posts.partials.post-interactions-script')
+@endpush
 </x-layouts.app>
+

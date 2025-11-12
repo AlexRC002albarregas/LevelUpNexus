@@ -26,4 +26,19 @@ class StoreCommentRequest extends FormRequest
             'post_id' => ['required', 'exists:posts,id'],
         ];
     }
+
+    /**
+     * Get custom error messages for validator.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'content.required' => 'El contenido del comentario es obligatorio',
+            'content.max' => 'El comentario no puede exceder los 1000 caracteres',
+            'post_id.required' => 'Debes seleccionar una publicación',
+            'post_id.exists' => 'La publicación seleccionada no existe',
+        ];
+    }
 }

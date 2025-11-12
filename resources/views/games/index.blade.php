@@ -1,34 +1,30 @@
 <x-layouts.app :title="'Mis juegos - LevelUp Nexus'">
-	<div class="flex items-center justify-between mb-8">
+	<!-- Título, Filtros y Botón en una sola fila -->
+	<div class="flex items-center gap-4 mb-8 flex-wrap">
 		<h1 class="text-4xl font-black bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
-			<i class="fas fa-trophy"></i> Mi Biblioteca
+			<i class="fas fa-gamepad"></i> Mis Juegos
 		</h1>
-		<a href="{{ route('games.create') }}" class="px-5 py-3 rounded-lg bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 font-bold glow transition">
-			<i class="fas fa-plus"></i> Añadir juego
-		</a>
-	</div>
-
-	<!-- Filtros -->
-	<div class="mb-6 p-4 rounded-xl bg-slate-800/50 border border-purple-500/30 backdrop-blur-sm">
-		<form method="GET" action="{{ route('games.index') }}" class="flex flex-wrap gap-4 items-end">
-			<div class="flex-1 min-w-[200px]">
-				<label class="block text-sm font-semibold text-purple-200 mb-2">
+		
+		<!-- Filtros -->
+		<form method="GET" action="{{ route('games.index') }}" class="flex gap-3 items-end ml-auto">
+			<div>
+				<label class="block text-xs text-purple-300 mb-1 font-semibold">
 					<i class="fas fa-sort"></i> Ordenar por
 				</label>
-				<select name="sort" class="w-full bg-slate-900 border border-purple-500/50 rounded-lg px-4 py-2 text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50" onchange="this.form.submit()">
-					<option value="favorites" {{ request('sort') == 'favorites' || !request('sort') ? 'selected' : '' }}>Favoritos primero</option>
-					<option value="released_newest" {{ request('sort') == 'released_newest' ? 'selected' : '' }}>Fecha de salida - Más nuevos</option>
-					<option value="released_oldest" {{ request('sort') == 'released_oldest' ? 'selected' : '' }}>Fecha de salida - Más antiguos</option>
-					<option value="hours_desc" {{ request('sort') == 'hours_desc' ? 'selected' : '' }}>Horas jugadas - Mayor a menor</option>
+				<select name="sort" class="bg-slate-900 border border-purple-500/50 rounded-lg px-4 py-2.5 text-white text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50" onchange="this.form.submit()">
+					<option value="favorites" {{ request('sort') == 'favorites' || !request('sort') ? 'selected' : '' }}>⭐ Favoritos</option>
+					<option value="released_newest" {{ request('sort') == 'released_newest' ? 'selected' : '' }}>📅 Más nuevos</option>
+					<option value="released_oldest" {{ request('sort') == 'released_oldest' ? 'selected' : '' }}>📅 Más antiguos</option>
+					<option value="hours_desc" {{ request('sort') == 'hours_desc' ? 'selected' : '' }}>⏱️ Más horas</option>
 				</select>
 			</div>
 			
-			<div class="flex-1 min-w-[200px]">
-				<label class="block text-sm font-semibold text-purple-200 mb-2">
-					<i class="fas fa-filter"></i> Filtrar por género
+			<div>
+				<label class="block text-xs text-purple-300 mb-1 font-semibold">
+					<i class="fas fa-filter"></i> Género
 				</label>
-				<select name="genre" class="w-full bg-slate-900 border border-purple-500/50 rounded-lg px-4 py-2 text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50" onchange="this.form.submit()">
-					<option value="">Todos los géneros</option>
+				<select name="genre" class="bg-slate-900 border border-purple-500/50 rounded-lg px-4 py-2.5 text-white text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50" onchange="this.form.submit()">
+					<option value="">🎮 Todos</option>
 					@foreach($genres as $genre)
 						<option value="{{ $genre }}" {{ request('genre') == $genre ? 'selected' : '' }}>{{ $genre }}</option>
 					@endforeach
@@ -36,17 +32,19 @@
 			</div>
 			
 			@if(request('sort') || request('genre'))
-				<div>
-					<a href="{{ route('games.index') }}" class="px-4 py-2 rounded-lg bg-red-600/20 border border-red-500 hover:bg-red-600/40 transition text-red-300">
-						<i class="fas fa-times"></i> Limpiar filtros
-					</a>
-				</div>
+				<a href="{{ route('games.index') }}" class="px-3 py-2.5 rounded-lg bg-red-600/20 border border-red-500 hover:bg-red-600/40 transition text-red-300 text-sm" title="Limpiar filtros">
+					<i class="fas fa-times"></i>
+				</a>
 			@endif
 		</form>
+		
+		<a href="{{ route('games.create') }}" class="px-5 py-3 rounded-lg bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 font-bold glow transition whitespace-nowrap">
+			<i class="fas fa-plus"></i> Añadir juego
+		</a>
 	</div>
 	<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 		@foreach($games as $g)
-			<div class="p-6 rounded-xl bg-slate-800/50 border border-purple-500/30 card-hover backdrop-blur-sm">
+			<div class="p-6 rounded-xl bg-slate-800/50 border border-purple-500/30 card-hover backdrop-blur-sm flex flex-col">
 				@if($g->rawg_image)
 					<div class="aspect-video bg-slate-900 rounded-lg overflow-hidden mb-4">
 						<img src="{{ $g->rawg_image }}" alt="{{ $g->title }}" class="w-full h-full object-cover">
@@ -54,7 +52,7 @@
 				@endif
 				<div class="flex items-start justify-between mb-3">
 					<div class="flex-1">
-						<div class="font-bold text-xl text-purple-200">{{ $g->title }}</div>
+						<div class="font-bold text-xl text-purple-200 min-h-[3.5rem]">{{ $g->title }}</div>
 						@if($g->rawg_rating)
 							<div class="text-sm text-purple-400 mt-1">
 								<i class="fas fa-star text-yellow-500"></i> {{ number_format($g->rawg_rating, 1) }}
@@ -78,7 +76,7 @@
 					<i class="fas fa-clock"></i>
 					<span class="font-semibold">{{ $g->hours_played }}</span> horas jugadas
 				</div>
-				<div class="flex gap-2">
+				<div class="flex gap-2 mt-auto">
 					<a href="{{ route('games.edit',$g) }}" class="flex-1 text-center px-4 py-2 rounded-lg bg-purple-600/20 border border-purple-500 hover:bg-purple-600/40 transition">
 						<i class="fas fa-edit"></i> Editar
 					</a>

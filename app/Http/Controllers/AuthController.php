@@ -43,6 +43,10 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Credenciales inválidas'], 422);
             }
 
+            if (!$user->is_active) {
+                return response()->json(['message' => 'Tu perfil está desactivado. Contacta con un administrador.'], 423);
+            }
+
             $token = $user->createToken('api')->plainTextToken;
             return response()->json(['user' => $user, 'token' => $token]);
         }
@@ -53,12 +57,19 @@ class AuthController extends Controller
             'password' => ['required','string'],
         ]);
 
-        if (Auth::attempt($credentials, true)) {
-            $request->session()->regenerate();
-            return redirect()->route('landing')->with('status', 'Has iniciado sesión');
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return back()->withErrors(['email' => 'Credenciales inválidas'])->onlyInput('email');
         }
 
-        return back()->withErrors(['email' => 'Credenciales inválidas'])->onlyInput('email');
+        if (!$user->is_active) {
+            return back()->withErrors(['email' => 'Tu perfil está desactivado. Contacta con un administrador para reactivarlo.'])->onlyInput('email');
+        }
+
+        Auth::login($user, true);
+        $request->session()->regenerate();
+        return redirect()->route('landing')->with('status', 'Has iniciado sesión');
     }
 
     /**

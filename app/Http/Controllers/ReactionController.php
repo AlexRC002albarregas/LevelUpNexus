@@ -15,13 +15,19 @@ class ReactionController extends Controller
     {
         $type = $request->input('type', 'like');
         $allowedTypes = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];
-        
-        if(!in_array($type, $allowedTypes)){
+
+        if (!in_array($type, $allowedTypes)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Tipo de reacción no válido',
+                ], 422);
+            }
+
             return back()->withErrors(['type' => 'Tipo de reacción no válido']);
         }
 
         // Verificar que el usuario puede ver el post
-        if(!auth()->user()->canViewProfile($post->user)){
+        if (!auth()->user()->canViewProfile($post->user)) {
             abort(403, 'No tienes permiso para reaccionar a esta publicación');
         }
 
@@ -30,15 +36,17 @@ class ReactionController extends Controller
             ->where('reactable_id', $post->id)
             ->first();
 
-        if($existingReaction){
+        $message = '';
+
+        if ($existingReaction) {
             // Si la reacción es del mismo tipo, eliminar (toggle off)
-            if($existingReaction->type === $type){
+            if ($existingReaction->type === $type) {
                 $existingReaction->delete();
-                return back()->with('status', 'Reacción eliminada');
+                $message = 'Reacción eliminada';
             } else {
                 // Si es diferente tipo, actualizar
                 $existingReaction->update(['type' => $type]);
-                return back()->with('status', 'Reacción actualizada');
+                $message = 'Reacción actualizada';
             }
         } else {
             // Crear nueva reacción
@@ -48,10 +56,29 @@ class ReactionController extends Controller
                 'reactable_id' => $post->id,
                 'type' => $type,
             ]);
-            return back()->with('status', 'Reacción añadida');
+            $message = 'Reacción añadida';
         }
-        
-        // Nota: back() automáticamente redirige al origen (index o show)
+
+        $post->load('reactions');
+        $userReaction = $post->reactions->where('user_id', auth()->id())->first();
+        $reactionCounts = $post->reactions
+            ->groupBy('type')
+            ->map(function ($group) {
+                return $group->count();
+            });
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+                'userReaction' => $userReaction?->type,
+                'counts' => [
+                    'total' => $post->reactions->count(),
+                    'byType' => $reactionCounts,
+                ],
+            ]);
+        }
+
+        return back()->with('status', $message);
     }
 
     /**

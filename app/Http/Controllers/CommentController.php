@@ -28,9 +28,36 @@ class CommentController extends Controller
             'content' => $request->content,
         ]);
 
+        $post->load(['comments.user']);
+
+        if ($request->expectsJson()) {
+            $comment->load('user');
+
+            return response()->json([
+                'message' => 'Comentario publicado correctamente',
+                'comment' => [
+                    'id' => $comment->id,
+                    'content' => $comment->content,
+                    'created_at_diff' => $comment->created_at->diffForHumans(),
+                    'created_at_iso' => $comment->created_at->toIso8601String(),
+                    'user' => [
+                        'id' => $comment->user->id,
+                        'name' => $comment->user->name,
+                        'profile_url' => route('users.show', $comment->user),
+                        'avatar' => $comment->user->avatar ? asset('storage/' . $comment->user->avatar) : null,
+                    ],
+                ],
+                'post' => [
+                    'id' => $post->id,
+                    'comments_count' => $post->comments->count(),
+                ],
+                'can_delete' => auth()->id() === $comment->user_id || auth()->id() === $post->user_id,
+            ], 201);
+        }
+
         // Redirigir al index si viene del feed, o al show si viene del detalle
         $redirectTo = $request->has('from_index') ? route('posts.index') : route('posts.show', $post);
-        
+
         return redirect($redirectTo)
             ->with('status', 'Comentario publicado correctamente');
     }

@@ -11,7 +11,7 @@ class StoreGroupInvitationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,20 @@ class StoreGroupInvitationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'username' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    /**
+     * Get custom error messages for validator.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'username.required' => 'Debes proporcionar un nombre de usuario o correo electrónico',
+            'username.max' => 'El nombre de usuario no puede exceder los 255 caracteres',
         ];
     }
 }

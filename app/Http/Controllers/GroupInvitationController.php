@@ -18,14 +18,14 @@ class GroupInvitationController extends Controller
             'username' => ['required', 'string'],
         ]);
 
-        // Verificar que el usuario puede invitar (owner o admin del grupo)
+        // Verificar que el usuario puede invitar (owner o moderator del grupo)
         $isOwner = $group->owner_id === auth()->id();
-        $isGroupAdmin = $group->members()
+        $isGroupModerator = $group->members()
             ->where('user_id', auth()->id())
-            ->where('member_role', 'admin')
+            ->where('member_role', 'moderator')
             ->exists();
 
-        if(!$isOwner && !$isGroupAdmin && auth()->user()->role !== 'admin'){
+        if(!$isOwner && !$isGroupModerator && auth()->user()->role !== 'admin'){
             abort(403, 'No tienes permiso para invitar usuarios a este grupo');
         }
 

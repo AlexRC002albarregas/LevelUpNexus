@@ -13,6 +13,7 @@
 		.glow-sm { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
 		.card-hover { transition: all 0.3s ease; }
 		.card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); }
+		[x-cloak] { display: none !important; }
 		@keyframes pulse-glow {
 			0%, 100% { box-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
 			50% { box-shadow: 0 0 20px rgba(236, 72, 153, 1); }
@@ -20,11 +21,14 @@
 		.notification-badge { animation: pulse-glow 2s ease-in-out infinite; }
 	</style>
 </head>
-<body class="min-h-screen text-white">
-	<header class="backdrop-blur-lg bg-slate-900/80 border-b border-purple-500/30 sticky top-0 z-50">
+<body class="min-h-screen text-white flex flex-col">
+	<header class="backdrop-blur-lg bg-slate-900/80 border-b border-purple-500/30 sticky top-0 z-[100]">
 		<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-			<a href="{{ route('landing') }}" class="font-bold text-2xl bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-				<i class="fas fa-gamepad"></i> LevelUp Nexus
+			<a href="{{ route('landing') }}" class="flex items-center gap-3 group">
+				<x-logo class="h-12 w-auto transition group-hover:scale-105" />
+				<span class="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+					LevelUp Nexus
+				</span>
 			</a>
 			<nav class="flex items-center gap-6">
 				<a href="{{ route('landing') }}" class="hover:text-purple-400 transition"><i class="fas fa-home"></i> Inicio</a>
@@ -39,8 +43,16 @@
 							<span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center notification-badge">{{ $notifCount }}</span>
 						@endif
 					</a>
-					<a href="{{ route('games.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-trophy"></i> Mis Juegos</a>
-					<a href="{{ route('groups.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-users"></i> Grupos</a>
+					<a href="{{ route('games.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-gamepad"></i> Mis Juegos</a>
+					<a href="{{ route('groups.index') }}" class="hover:text-purple-400 transition relative">
+						<i class="fas fa-users"></i> Grupos
+						@php
+							$groupInvitationsCount = auth()->user()->pendingGroupInvitationsCount();
+						@endphp
+						@if($groupInvitationsCount > 0)
+							<span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center notification-badge">{{ $groupInvitationsCount }}</span>
+						@endif
+					</a>
 					
 					<!-- Menú de usuario -->
 					<div class="flex items-center gap-3 ml-4 pl-4 border-l border-purple-500/30">
@@ -54,12 +66,47 @@
 							</div>
 							<span class="font-semibold group-hover:text-purple-300">{{ auth()->user()->name }}</span>
 						</a>
-						<form method="POST" action="{{ route('auth.logout') }}">
-							@csrf
-							<button class="px-3 py-2 rounded-lg bg-red-600/20 border border-red-500 hover:bg-red-600/40 transition" title="Cerrar sesión">
-								<i class="fas fa-sign-out-alt"></i>
-							</button>
-						</form>
+						@if(auth()->user()->isAdmin())
+							<div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
+								<button 
+									type="button" 
+									class="px-3 py-2 rounded-lg bg-slate-900/70 border border-purple-500/40 hover:bg-purple-500/30 transition flex items-center gap-2"
+									@click="open = !open"
+									aria-haspopup="true"
+									:aria-expanded="open.toString()"
+								>
+									<i class="fas fa-bars"></i>
+								</button>
+								<div 
+									class="absolute right-0 mt-2 w-48 rounded-xl border border-purple-500/40 bg-slate-900/90 backdrop-blur-lg shadow-xl shadow-purple-900/30 overflow-hidden z-50"
+									x-cloak
+									x-show="open"
+									x-transition.origin.top.right
+									@click.away="open = false"
+								>
+									<a 
+										href="{{ route('admin.users.index') }}" 
+										class="flex items-center gap-2 px-4 py-3 text-sm text-purple-100 hover:bg-purple-500/20 transition"
+										@click="open = false"
+									>
+										<i class="fas fa-sliders-h"></i> Panel de Control
+									</a>
+									<form method="POST" action="{{ route('auth.logout') }}">
+										@csrf
+										<button type="submit" class="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-200 hover:bg-red-500/20 transition">
+											<i class="fas fa-sign-out-alt"></i> Cerrar sesión
+										</button>
+									</form>
+								</div>
+							</div>
+						@else
+							<form method="POST" action="{{ route('auth.logout') }}">
+								@csrf
+								<button class="px-3 py-2 rounded-lg bg-red-600/20 border border-red-500 hover:bg-red-600/40 transition" title="Cerrar sesión">
+									<i class="fas fa-sign-out-alt"></i>
+								</button>
+							</form>
+						@endif
 					</div>
 				@else
 					<a href="{{ route('auth.login') }}" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 glow-sm transition"><i class="fas fa-sign-in-alt"></i> Entrar</a>
@@ -69,9 +116,9 @@
 		</div>
 	</header>
 
-	<main class="max-w-7xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1">
 		@if (session('status'))
-			<div class="mb-4 p-4 rounded-lg bg-green-500/20 border border-green-500 text-green-200 glow-sm"><i class="fas fa-check-circle"></i> {{ session('status') }}</div>
+			<div class="mb-4 p-4 rounded-lg bg-green-500/20 border border-green-500 text-green-200 glow-sm" data-auto-dismiss><i class="fas fa-check-circle"></i> {{ session('status') }}</div>
 		@endif
 		@if ($errors->any())
 			<div class="mb-4 p-4 rounded-lg bg-red-500/20 border border-red-500 text-red-200">
@@ -85,16 +132,73 @@
 		{{ $slot }}
 	</main>
 
-	<footer class="border-t border-purple-500/30 bg-slate-900/50 backdrop-blur-lg">
-		<div class="max-w-7xl mx-auto px-4 py-6 text-sm text-purple-300">
-			<i class="fas fa-code"></i> © {{ date('Y') }} LevelUp Nexus - Plataforma Gamer
+    <footer class="border-t border-purple-500/40 bg-slate-900/70 backdrop-blur-lg mt-auto">
+		<div class="max-w-7xl mx-auto px-6 py-10">
+			<div class="grid gap-8 md:grid-cols-4 text-sm">
+				<div>
+					<a href="{{ route('landing') }}" class="inline-flex items-center gap-2 text-xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+						<i class="fas fa-gamepad"></i> LevelUp Nexus
+					</a>
+					<p class="mt-3 text-purple-300/80 leading-relaxed">
+						Tu hub social para descubrir juegos, compartir logros y conectar con jugadores de todo el mundo.
+					</p>
+					<div class="flex gap-3 mt-5 text-purple-200/80">
+						<a href="https://twitter.com" target="_blank" rel="noopener" class="w-9 h-9 flex items-center justify-center rounded-full bg-purple-600/20 border border-purple-500/40 hover:bg-purple-600/40 transition">
+							<i class="fab fa-twitter"></i>
+						</a>
+						<a href="https://discord.com" target="_blank" rel="noopener" class="w-9 h-9 flex items-center justify-center rounded-full bg-purple-600/20 border border-purple-500/40 hover:bg-purple-600/40 transition">
+							<i class="fab fa-discord"></i>
+						</a>
+						<a href="https://twitch.tv" target="_blank" rel="noopener" class="w-9 h-9 flex items-center justify-center rounded-full bg-purple-600/20 border border-purple-500/40 hover:bg-purple-600/40 transition">
+							<i class="fab fa-twitch"></i>
+						</a>
+					</div>
+				</div>
+				<div>
+					<h4 class="text-purple-200 font-semibold uppercase tracking-wide mb-4 text-xs">Explorar</h4>
+					<ul class="space-y-2 text-purple-300/80">
+						<li><a href="{{ route('posts.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-newspaper mr-2 text-purple-400/80"></i>Publicaciones</a></li>
+						<li><a href="{{ route('games.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-gamepad mr-2 text-purple-400/80"></i>Mi Biblioteca</a></li>
+						<li><a href="{{ route('groups.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-users mr-2 text-purple-400/80"></i>Grupos</a></li>
+						<li><a href="{{ route('friends.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-user-friends mr-2 text-purple-400/80"></i>Amigos</a></li>
+					</ul>
+				</div>
+				<div>
+					<h4 class="text-purple-200 font-semibold uppercase tracking-wide mb-4 text-xs">Comunidad</h4>
+					<ul class="space-y-2 text-purple-300/80">
+						<li><span class="flex items-center gap-2"><i class="fas fa-trophy text-purple-400/80"></i>Torneos semanales</span></li>
+						<li><span class="flex items-center gap-2"><i class="fas fa-microphone text-purple-400/80"></i>Podcast mensual</span></li>
+						<li><span class="flex items-center gap-2"><i class="fas fa-heart text-purple-400/80"></i>Eventos benéficos</span></li>
+						<li><span class="flex items-center gap-2"><i class="fas fa-star text-purple-400/80"></i>Programas VIP</span></li>
+					</ul>
+				</div>
+				<div>
+					<h4 class="text-purple-200 font-semibold uppercase tracking-wide mb-4 text-xs">Boletín</h4>
+					<p class="text-purple-300/80 mb-3 leading-relaxed">Recibe actualizaciones sobre nuevos juegos, retos y funcionalidades antes que nadie.</p>
+					<form class="space-y-3">
+						<input type="email" placeholder="tu@email.com" class="w-full px-4 py-2.5 rounded-lg bg-slate-900/80 border border-purple-500/40 text-purple-100 placeholder-purple-400/50 focus:outline-none focus:ring-2 focus:ring-purple-500/60">
+						<button type="button" class="w-full px-4 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-semibold text-white transition glow-sm">
+							<i class="fas fa-paper-plane mr-2"></i>Quiero unirme
+						</button>
+					</form>
+				</div>
+			</div>
+			<div class="mt-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-purple-400/80 border-t border-purple-500/20 pt-6">
+				<span><i class="fas fa-code"></i> {{ date('Y') }} LevelUp Nexus · Hecho para gamers por gamers</span>
+				<div class="flex flex-wrap gap-4">
+					<a href="#" class="hover:text-purple-200 transition">Términos</a>
+					<a href="#" class="hover:text-purple-200 transition">Privacidad</a>
+					<a href="#" class="hover:text-purple-200 transition">Soporte</a>
+					<a href="mailto:hello@levelupnexus.com" class="hover:text-purple-200 transition"><i class="fas fa-envelope mr-1"></i>Contacto</a>
+				</div>
+			</div>
 		</div>
 	</footer>
 
 	<script>
 		// Auto-ocultar notificaciones después de 4 segundos
 		document.addEventListener('DOMContentLoaded', function() {
-			const notifications = document.querySelectorAll('[class*="bg-green-500/20"], [class*="bg-red-500/20"]');
+			const notifications = document.querySelectorAll('[data-auto-dismiss]');
 			
 			notifications.forEach(notification => {
 				// Añadir animación de fade out
@@ -111,6 +215,8 @@
 			});
 		});
 	</script>
+
+	@stack('scripts')
 </body>
 </html>
 

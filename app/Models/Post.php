@@ -10,7 +10,8 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'group_id', 'content', 'visibility'
+        'user_id', 'group_id', 'game_id', 'content', 'visibility', 'image',
+        'rawg_game_id', 'game_title', 'game_image', 'game_platform'
     ];
 
     public function user()
@@ -21,6 +22,11 @@ class Post extends Model
     public function group()
     {
         return $this->belongsTo(Group::class);
+    }
+
+    public function game()
+    {
+        return $this->belongsTo(Game::class);
     }
 
     public function comments()

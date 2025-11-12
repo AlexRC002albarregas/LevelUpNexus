@@ -203,13 +203,28 @@
 				
 				const data = await res.json();
 				
-				if(!data.results || data.results.length === 0) {
+				// El backend ahora devuelve 'games' en lugar de 'results'
+				const results = data.games || data.results || [];
+				
+				if(results.length === 0) {
 					grid.innerHTML = '<p class="text-purple-400 col-span-full text-center py-4">No se encontraron juegos. Intenta con otro término de búsqueda.</p>';
 					return;
 				}
 				
+				// Adaptar formato si viene del nuevo endpoint
+				const gamesData = results.map(game => {
+					return {
+						id: game.id,
+						name: game.name,
+						background_image: game.image || game.background_image,
+						released: game.released,
+						rating: game.rating,
+						platforms: game.platforms
+					};
+				});
+				
 				// Mostrar resultados usando las mismas tarjetas que los juegos populares
-				grid.innerHTML = data.results.map(game => createGameCard(game)).join('');
+				grid.innerHTML = gamesData.map(game => createGameCard(game)).join('');
 			} catch(error) {
 				console.error('Error buscando juegos:', error);
 				grid.innerHTML = '<p class="text-red-400 col-span-full text-center py-4">Error al buscar juegos</p>';

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'bio',
         'favorite_games',
         'is_private',
+        'is_active',
         'password',
         'role',
     ];
@@ -48,6 +49,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'favorite_games' => 'array',
         'is_private' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function profile()
@@ -143,6 +145,14 @@ class User extends Authenticatable
     public function notificationsCount()
     {
         return $this->pendingFriendRequests()->count() + $this->unreadMessagesCount();
+    }
+
+    // Invitaciones pendientes a grupos
+    public function pendingGroupInvitationsCount()
+    {
+        return GroupInvitation::where('recipient_id', $this->id)
+            ->where('status', 'pending')
+            ->count();
     }
 
     // Verificar si el usuario actual puede ver el perfil de otro usuario

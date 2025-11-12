@@ -132,8 +132,8 @@
 	</div>
 
 	<!-- Modal de Juegos Favoritos -->
-	<div id="favoritesModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-		<div class="bg-slate-900 rounded-2xl w-full max-w-5xl border border-purple-500 glow flex flex-col" style="height: 85vh;">
+	<div id="favoritesModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[150] p-4" onclick="closeFavoritesModal()">
+		<div class="bg-slate-900 rounded-2xl w-full max-w-5xl border border-purple-500 glow flex flex-col" style="height: 85vh;" onclick="event.stopPropagation()">
 			<div class="p-4 border-b border-purple-500/30 flex items-center justify-between flex-shrink-0">
 				<h3 class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
 					<i class="fas fa-gamepad"></i> Selecciona tus juegos favoritos
@@ -184,6 +184,11 @@
 
 		function openFavoritesModal() {
 			document.getElementById('favoritesModal').classList.remove('hidden');
+			// Limpiar campo de búsqueda
+			const searchInput = document.getElementById('gameSearch');
+			if(searchInput) {
+				searchInput.value = '';
+			}
 			loadFavorites();
 			loadPopularGames();
 		}
@@ -303,12 +308,27 @@
 				
 				console.log('Data parseada:', data);
 				
-				if(!data.results || data.results.length === 0) {
+				// El backend ahora devuelve 'games' en lugar de 'results'
+				const results = data.games || data.results || [];
+				
+				if(results.length === 0) {
 					grid.innerHTML = '<p class="text-purple-400 col-span-full text-center py-4">No se encontraron juegos</p>';
 					return;
 				}
 				
-				grid.innerHTML = data.results.map(game => createGameCard(game, userFavorites.includes(game.id))).join('');
+				// Adaptar formato si viene del nuevo endpoint
+				const gamesData = results.map(game => {
+					return {
+						id: game.id,
+						name: game.name,
+						background_image: game.image || game.background_image,
+						released: game.released,
+						rating: game.rating,
+						platforms: game.platforms
+					};
+				});
+				
+				grid.innerHTML = gamesData.map(game => createGameCard(game, userFavorites.includes(game.id))).join('');
 			} catch(error) {
 				console.error('Error buscando juegos:', error);
 				grid.innerHTML = '<p class="text-red-400 col-span-full text-center py-4">Error al buscar juegos. Verifica la consola.</p>';

@@ -1,12 +1,13 @@
 <x-layouts.app :title="'Mis amigos - LevelUp Nexus'">
-	<div class="flex items-center justify-between mb-8">
-		<h1 class="text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-			<i class="fas fa-user-friends"></i> Mis Amigos
-		</h1>
-		<button onclick="document.getElementById('addFriendModal').classList.remove('hidden')" class="px-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-bold glow transition">
-			<i class="fas fa-user-plus"></i> Añadir amigo
-		</button>
-	</div>
+	<div class="max-w-7xl mx-auto">
+		<div class="flex items-center justify-between mb-8">
+			<h1 class="text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+				<i class="fas fa-user-friends"></i> Mis Amigos
+			</h1>
+			<button onclick="document.getElementById('addFriendModal').classList.remove('hidden')" class="px-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-bold glow transition">
+				<i class="fas fa-user-plus"></i> Añadir amigo
+			</button>
+		</div>
 
 	@if($pending->count() > 0)
 		<section class="mb-8 p-6 rounded-2xl bg-yellow-500/10 border border-yellow-500 backdrop-blur-sm glow-sm">
@@ -50,16 +51,16 @@
 	<section>
 		<h3 class="font-bold text-2xl mb-4 text-purple-300"><i class="fas fa-users"></i> Amigos conectados ({{ $friends->count() }})</h3>
 		@if($friends->count() > 0)
-			<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 				@foreach($friends as $friend)
-					<div onclick="openChat({{ $friend->id }}, '{{ $friend->name }}')" class="p-5 rounded-xl bg-slate-800/50 border border-purple-500/30 card-hover backdrop-blur-sm cursor-pointer relative">
+					<div onclick="openChat({{ $friend->id }}, '{{ $friend->name }}')" class="p-6 rounded-xl bg-slate-800/50 border border-purple-500/30 card-hover backdrop-blur-sm cursor-pointer relative">
 						@if(isset($unreadCounts[$friend->id]) && $unreadCounts[$friend->id] > 0)
 							<div class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center notification-badge border-2 border-slate-900">
 								{{ $unreadCounts[$friend->id] }}
 							</div>
 						@endif
-						<div class="flex items-center gap-3 mb-2">
-							<div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center font-black text-xl overflow-hidden border-2 border-purple-400 relative">
+						<div class="flex items-center gap-3 mb-3">
+							<div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center font-black text-2xl overflow-hidden border-2 border-purple-400 relative">
 								@if($friend->avatar)
 									<img src="{{ asset('storage/' . $friend->avatar) }}" class="w-full h-full object-cover" alt="{{ $friend->name }}">
 								@else
@@ -72,11 +73,11 @@
 								@endif
 							</div>
 							<div class="flex-1">
-								<div class="font-bold text-lg text-purple-200">{{ $friend->name }}</div>
+								<div class="font-bold text-xl text-purple-200">{{ $friend->name }}</div>
 								<div class="text-sm text-purple-400"><i class="fas fa-envelope"></i> {{ $friend->email }}</div>
 							</div>
 						</div>
-						<div class="mt-3 pt-3 border-t border-purple-500/30 text-sm text-purple-300 flex items-center justify-between">
+						<div class="mt-4 pt-4 border-t border-purple-500/30 text-sm text-purple-300 flex items-center justify-between">
 							<span><i class="fas fa-comment"></i> Abrir chat</span>
 							@if(isset($unreadCounts[$friend->id]) && $unreadCounts[$friend->id] > 0)
 								<span class="text-pink-400 font-bold text-xs">
@@ -84,11 +85,11 @@
 								</span>
 							@endif
 						</div>
-					<div class="flex gap-2 mt-2">
-						<a href="{{ route('users.show', $friend) }}" onclick="event.stopPropagation()" class="flex-1 text-center px-3 py-2 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-xs font-semibold text-purple-300 transition">
+					<div class="flex gap-2 mt-3">
+						<a href="{{ route('users.show', $friend) }}" onclick="event.stopPropagation()" class="flex-1 text-center px-4 py-2 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/50 text-sm font-semibold text-purple-300 transition">
 							<i class="fas fa-user"></i> Ver perfil
 						</a>
-						<button type="button" onclick="event.stopPropagation(); openDeleteFriendModal({{ $friend->id }}, '{{ $friend->name }}', {{ $friend->friendship_id }})" class="px-3 py-2 rounded-lg bg-red-600/30 hover:bg-red-600/50 border border-red-500/50 text-xs font-semibold text-red-300 transition">
+						<button type="button" onclick="event.stopPropagation(); openDeleteFriendModal({{ $friend->id }}, '{{ $friend->name }}', {{ $friend->friendship_id }})" class="px-4 py-2 rounded-lg bg-red-600/30 hover:bg-red-600/50 border border-red-500/50 text-sm font-semibold text-red-300 transition">
 							<i class="fas fa-user-times"></i>
 						</button>
 					</div>
@@ -140,11 +141,11 @@
 	</div>
 
 	<!-- Modal Chat -->
-	<div id="chatModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-		<div class="bg-slate-900 rounded-2xl w-full max-w-2xl mx-4 border border-purple-500 glow flex flex-col" style="height: 600px;">
-			<div class="p-6 border-b border-purple-500/30 flex items-center justify-between">
+	<div id="chatModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[150] p-4" onclick="closeChat()">
+		<div class="bg-slate-900 rounded-2xl w-full max-w-4xl h-[85vh] max-h-[800px] min-h-[500px] border border-purple-500 glow flex flex-col" onclick="event.stopPropagation()">
+			<div class="p-4 border-b border-purple-500/30 flex items-center justify-between flex-shrink-0">
 				<div class="flex items-center gap-3">
-					<div id="chatAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center font-bold text-lg"></div>
+					<div id="chatAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center font-bold text-lg overflow-hidden border-2 border-purple-400"></div>
 					<div>
 						<h3 id="chatName" class="text-xl font-bold text-purple-200"></h3>
 						<div class="text-sm text-green-400"><i class="fas fa-circle text-xs"></i> Online</div>
@@ -154,8 +155,8 @@
 					<i class="fas fa-times text-2xl"></i>
 				</button>
 			</div>
-			<div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-3"></div>
-			<div class="p-4 border-t border-purple-500/30">
+			<div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-3 min-h-0"></div>
+			<div class="p-4 border-t border-purple-500/30 flex-shrink-0">
 				<form id="chatForm" class="flex gap-2" onsubmit="sendMessage(event)">
 					<input id="chatInput" type="text" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-800 border border-purple-500/50 rounded-lg px-4 py-3 text-white placeholder-purple-400/50 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50">
 					<button type="submit" class="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-bold glow-sm transition">
@@ -197,10 +198,28 @@
 				const isMe = msg.sender_id === {{ auth()->id() }};
 				const div = document.createElement('div');
 				div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
+				
+				// Formatear fecha y hora
+				const msgDate = new Date(msg.created_at);
+				const today = new Date();
+				const isToday = msgDate.toDateString() === today.toDateString();
+				const yesterday = new Date(today);
+				yesterday.setDate(yesterday.getDate() - 1);
+				const isYesterday = msgDate.toDateString() === yesterday.toDateString();
+				
+				let timeString = '';
+				if (isToday) {
+					timeString = msgDate.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+				} else if (isYesterday) {
+					timeString = 'Ayer ' + msgDate.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+				} else {
+					timeString = msgDate.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'}) + ' ' + msgDate.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+				}
+				
 				div.innerHTML = `
 					<div class="max-w-xs ${isMe ? 'bg-purple-600' : 'bg-slate-800'} rounded-2xl px-4 py-2 border ${isMe ? 'border-purple-500' : 'border-purple-500/30'}">
 						<p class="text-white">${msg.content}</p>
-						<div class="text-xs text-purple-300 mt-1">${new Date(msg.created_at).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</div>
+						<div class="text-xs text-purple-300 mt-1">${timeString}</div>
 					</div>
 				`;
 				container.appendChild(div);
@@ -410,6 +429,8 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
 	</div>
 </x-layouts.app>
 

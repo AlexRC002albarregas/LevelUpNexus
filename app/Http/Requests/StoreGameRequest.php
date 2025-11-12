@@ -34,4 +34,26 @@ class StoreGameRequest extends FormRequest
             'rawg_slug' => ['nullable','string','max:200'],
         ];
     }
+
+    /**
+     * Get custom error messages for validator.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'El título del juego es obligatorio',
+            'title.max' => 'El título no puede exceder los 150 caracteres',
+            'platform.required' => 'La plataforma es obligatoria',
+            'platform.in' => 'La plataforma debe ser: PC, Xbox, PlayStation, Switch, Mobile u Otra',
+            'genre.max' => 'El género no puede exceder los 100 caracteres',
+            'hours_played.integer' => 'Las horas jugadas deben ser un número entero',
+            'hours_played.min' => 'Las horas jugadas no pueden ser negativas',
+            'rawg_rating.numeric' => 'La valoración debe ser un número',
+            'rawg_rating.min' => 'La valoración mínima es 0',
+            'rawg_rating.max' => 'La valoración máxima es 5',
+            'released_date.date' => 'La fecha de lanzamiento no es válida',
+        ];
+    }
 }

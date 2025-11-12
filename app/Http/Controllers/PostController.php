@@ -8,6 +8,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -35,7 +36,9 @@ class PostController extends Controller
             ->toArray();
         
         // Filtrar publicaciones según visibilidad del post y perfil del autor
-        $posts = Post::with(['user', 'group', 'reactions.user', 'comments.user'])
+        // Excluir publicaciones de grupo (group_id no null)
+        $posts = Post::with(['user', 'group', 'game', 'reactions.user', 'comments.user'])
+            ->whereNull('group_id') // Solo publicaciones generales, no de grupos
             ->where(function($query) use ($userId, $friendIds) {
                 // 1. Propias publicaciones (siempre visibles)
                 $query->where('user_id', $userId)
@@ -61,15 +64,6 @@ class PostController extends Controller
                             ->whereHas('user', function($userQ) use ($friendIds) {
                                 $userQ->whereIn('id', $friendIds);
                             });
-                    })
-                    // 5. Publicaciones de grupo (solo si es miembro)
-                    ->orWhere(function($q) use ($userId) {
-                        $q->where('visibility', 'group')
-                            ->whereHas('group', function($groupQ) use ($userId) {
-                                $groupQ->whereHas('members', function($memberQ) use ($userId) {
-                                    $memberQ->where('user_id', $userId);
-                                });
-                            });
                     });
             })
             ->orderByDesc('id')
@@ -88,10 +82,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        // Obtener grupos del usuario para seleccionar en qué grupo publicar
-        $groups = auth()->user()->groups;
-        
-        return view('posts.create', compact('groups'));
+        return view('posts.create');
     }
 
     /**
@@ -99,15 +90,31 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        $post = Post::create([
+        $data = [
             'user_id' => auth()->id(),
             'content' => $request->content,
             'group_id' => $request->group_id,
-            'visibility' => $request->visibility ?? 'public',
-        ]);
+            'game_id' => $request->game_id,
+            'rawg_game_id' => $request->rawg_game_id,
+            'game_title' => $request->game_title,
+            'game_image' => $request->game_image,
+            'game_platform' => $request->game_platform,
+            'visibility' => $request->group_id ? 'group' : ($request->visibility ?? 'public'),
+        ];
 
-        return redirect()
-            ->route('posts.show', $post)
+        // Manejar subida de imagen
+        if($request->hasFile('image')){
+            $path = $request->file('image')->store('posts', 'public');
+            $data['image'] = $path;
+        }
+
+        $post = Post::create($data);
+
+        $redirectRoute = $request->group_id 
+            ? route('groups.show', $request->group_id)
+            : route('posts.show', $post);
+
+        return redirect($redirectRoute)
             ->with('status', 'Publicación creada correctamente');
     }
 
@@ -121,7 +128,7 @@ class PostController extends Controller
         // Verificar si el usuario puede ver esta publicación
         // 1. Si es el propio autor, siempre puede ver
         if($post->user_id === auth()->id()) {
-            $post->load(['user', 'group', 'comments.user', 'reactions.user']);
+            $post->load(['user', 'group', 'game', 'comments.user', 'reactions.user']);
             return view('posts.show', compact('post'));
         }
         
@@ -144,7 +151,7 @@ class PostController extends Controller
         }
         // 'public' y otros valores: ya pasaron la verificación del perfil
         
-        $post->load(['user', 'group', 'comments.user', 'reactions.user']);
+        $post->load(['user', 'group', 'game', 'comments.user', 'reactions.user']);
         
         return view('posts.show', compact('post'));
     }
@@ -170,11 +177,24 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        $post->update([
+        $data = [
             'content' => $request->content,
             'group_id' => $request->group_id,
-            'visibility' => $request->visibility ?? 'public',
-        ]);
+            'visibility' => $request->group_id ? 'group' : ($request->visibility ?? 'public'),
+        ];
+
+        // Manejar subida de imagen
+        if($request->hasFile('image')){
+            // Eliminar imagen anterior si existe
+            if($post->image && Storage::disk('public')->exists($post->image)){
+                Storage::disk('public')->delete($post->image);
+            }
+            // Guardar nueva imagen
+            $path = $request->file('image')->store('posts', 'public');
+            $data['image'] = $path;
+        }
+
+        $post->update($data);
 
         return redirect()
             ->route('posts.show', $post)
@@ -186,16 +206,54 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        // Verificar autorización
-        abort_unless(
-            auth()->id() === $post->user_id || auth()->user()->role === 'admin',
-            403
-        );
+        $canDelete = false;
+        $redirectRoute = 'posts.index';
+
+        // Si es el autor del post
+        if(auth()->id() === $post->user_id) {
+            $canDelete = true;
+        }
         
+        // Si es admin
+        if(auth()->user()->role === 'admin') {
+            $canDelete = true;
+        }
+
+        // Si es un post de grupo, verificar si es owner o moderator del grupo
+        if($post->group_id) {
+            $group = $post->group;
+            $isOwner = $group->owner_id === auth()->id();
+            
+            $memberRole = $group->members()
+                ->where('user_id', auth()->id())
+                ->first()
+                ->pivot
+                ->member_role ?? null;
+            
+            $isModerator = $memberRole === 'moderator';
+
+            if($isOwner || $isModerator) {
+                $canDelete = true;
+            }
+
+            // Si es un post de grupo, redirigir al grupo
+            $redirectRoute = 'groups.show';
+            $redirectParam = $post->group_id;
+        }
+
+        abort_unless($canDelete, 403, 'No tienes permisos para eliminar esta publicación');
+        
+        // Eliminar imagen si existe
+        if($post->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($post->image)){
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($post->image);
+        }
+
         $post->delete();
 
-        return redirect()
-            ->route('posts.index')
-            ->with('status', 'Publicación eliminada correctamente');
+        if(isset($redirectParam)) {
+            return redirect()->route($redirectRoute, $redirectParam)->with('status', 'Mensaje eliminado correctamente');
+        }
+
+        return redirect()->route($redirectRoute)->with('status', 'Publicación eliminada correctamente');
     }
 }

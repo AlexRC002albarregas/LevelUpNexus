@@ -16,15 +16,20 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups = Group::withCount('members')->with('owner')->orderBy('name')->paginate(12);
+        // Obtener solo los grupos en los que el usuario es miembro
+        $groups = Group::withCount('members')
+            ->with('owner')
+            ->whereHas('members', function($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->orderBy('name')
+            ->paginate(12);
         
         // Obtener invitaciones pendientes del usuario actual
         $pendingInvitations = GroupInvitation::where('recipient_id', auth()->id())
             ->where('status', 'pending')
-            ->with('group')
-            ->get()
-            ->pluck('group_id')
-            ->toArray();
+            ->with(['group.owner', 'sender'])
+            ->get();
         
         return view('groups.index', compact('groups', 'pendingInvitations'));
     }
@@ -55,8 +60,8 @@ class GroupController extends Controller
             $group->save();
         }
 
-        // El creador es automáticamente miembro
-        $group->members()->attach(auth()->id(), ['member_role' => 'admin']);
+        // El creador es automáticamente miembro con rol owner
+        $group->members()->attach(auth()->id(), ['member_role' => 'owner']);
 
         return redirect()
             ->route('groups.show', $group)
@@ -71,6 +76,18 @@ class GroupController extends Controller
         $group->load(['owner', 'members', 'posts.user']);
         $isMember = $group->members->contains(auth()->id());
         $isOwner = $group->owner_id === auth()->id();
+        
+        // Obtener el rol del usuario actual en el grupo
+        $currentUserRole = null;
+        if($isMember) {
+            $currentUserRole = $group->members()
+                ->where('user_id', auth()->id())
+                ->first()
+                ->pivot
+                ->member_role ?? null;
+        }
+        
+        $isModerator = $currentUserRole === 'moderator';
         
         // Si no es miembro, solo puede ver información básica (para aceptar invitación)
         if(!$isMember && !$isOwner) {
@@ -88,7 +105,7 @@ class GroupController extends Controller
             
             $pendingInvitations = null; // No hay invitaciones pendientes para mostrar si no es owner
             
-            return view('groups.show', compact('group', 'isMember', 'isOwner', 'pendingInvitations', 'receivedInvitation'));
+            return view('groups.show', compact('group', 'isMember', 'isOwner', 'isModerator', 'pendingInvitations', 'receivedInvitation'));
         }
         
         // Invitaciones pendientes (solo para owner)
@@ -107,7 +124,7 @@ class GroupController extends Controller
             ->with('sender')
             ->first();
 
-        return view('groups.show', compact('group', 'isMember', 'isOwner', 'pendingInvitations', 'receivedInvitation'));
+        return view('groups.show', compact('group', 'isMember', 'isOwner', 'isModerator', 'pendingInvitations', 'receivedInvitation'));
     }
 
     /**
@@ -214,5 +231,77 @@ class GroupController extends Controller
         $group->members()->detach(auth()->id());
 
         return back()->with('status', 'Has abandonado el grupo');
+    }
+
+    /**
+     * Change member role to moderator or back to member
+     */
+    public function changeMemberRole(Request $request, Group $group, $userId)
+    {
+        // Solo el owner puede cambiar roles
+        abort_unless($group->owner_id === auth()->id(), 403, 'Solo el propietario puede cambiar roles');
+
+        // Verificar que el usuario es miembro del grupo
+        $member = $group->members()->where('user_id', $userId)->first();
+        abort_unless($member, 404, 'El usuario no es miembro de este grupo');
+
+        // No se puede cambiar el rol del owner
+        if($userId == $group->owner_id){
+            return back()->withErrors(['error' => 'No puedes cambiar el rol del propietario']);
+        }
+
+        $request->validate([
+            'role' => 'required|in:member,moderator'
+        ]);
+
+        // Actualizar el rol
+        $group->members()->updateExistingPivot($userId, [
+            'member_role' => $request->role
+        ]);
+
+        $roleName = $request->role === 'moderator' ? 'moderador' : 'miembro';
+        return back()->with('status', "Rol actualizado a {$roleName} correctamente");
+    }
+
+    /**
+     * Kick member from group (owner and moderators)
+     */
+    public function kickMember(Group $group, $userId)
+    {
+        // Verificar permisos: owner o moderator
+        $currentUserRole = $group->members()
+            ->where('user_id', auth()->id())
+            ->first()
+            ->pivot
+            ->member_role ?? null;
+
+        $isOwner = $group->owner_id === auth()->id();
+        $isModerator = $currentUserRole === 'moderator';
+
+        abort_unless($isOwner || $isModerator, 403, 'No tienes permisos para expulsar miembros');
+
+        // No se puede expulsar al owner
+        if($userId == $group->owner_id){
+            return back()->withErrors(['error' => 'No puedes expulsar al propietario del grupo']);
+        }
+
+        // Un moderador no puede expulsar a otro moderador, solo el owner puede
+        $targetUserRole = $group->members()
+            ->where('user_id', $userId)
+            ->first()
+            ->pivot
+            ->member_role ?? null;
+
+        if($isModerator && !$isOwner && $targetUserRole === 'moderator'){
+            return back()->withErrors(['error' => 'No puedes expulsar a otro moderador']);
+        }
+
+        // Verificar que el usuario es miembro
+        abort_unless($group->members()->where('user_id', $userId)->exists(), 404, 'El usuario no es miembro de este grupo');
+
+        // Expulsar al miembro
+        $group->members()->detach($userId);
+
+        return back()->with('status', 'Miembro expulsado del grupo');
     }
 }

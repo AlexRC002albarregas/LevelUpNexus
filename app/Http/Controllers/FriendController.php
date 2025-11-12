@@ -41,7 +41,9 @@ class FriendController extends Controller
      */
     public function send(Request $request)
     {
-        $request->validate(['username' => 'required|string']);
+        $request->validate(['username' => 'required|string'], [
+            'username.required' => 'Debes proporcionar un nombre de usuario o correo electrónico',
+        ]);
         $friend = User::where('name', $request->username)->orWhere('email', $request->username)->first();
         
         if(!$friend || $friend->id === auth()->id()){
