@@ -195,6 +195,46 @@
 		</div>
 	</footer>
 
+	@guest
+		<div
+			id="cookies-banner"
+			class="absolute inset-x-0 bottom-6 px-4 sm:px-0 z-[120] opacity-0 pointer-events-none translate-y-8 transition-all duration-500 ease-out"
+		>
+			<div class="mx-auto max-w-3xl rounded-2xl border border-purple-500/40 bg-slate-900/95 backdrop-blur-lg shadow-2xl shadow-purple-900/40 px-6 py-5 sm:py-6">
+				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+					<div class="sm:max-w-md">
+						<div class="flex items-center gap-3 text-purple-200">
+							<i class="fas fa-cookie-bite text-2xl text-pink-400"></i>
+							<p class="text-sm sm:text-base leading-relaxed">
+								Usamos cookies para mejorar tu experiencia. ¿Prefieres aceptarlas todas, rechazarlas o quedarte solo con las esenciales?
+							</p>
+						</div>
+					</div>
+					<div class="flex flex-wrap gap-2 justify-end sm:justify-start">
+						<button
+							type="button"
+							class="js-cookies-close min-w-[150px] text-center px-4 py-2.5 rounded-xl border border-purple-500/40 text-purple-200 hover:bg-purple-500/20 transition text-sm font-medium"
+						>
+							Solo esenciales
+						</button>
+						<button
+							type="button"
+							class="js-cookies-close min-w-[150px] text-center px-4 py-2.5 rounded-xl border border-purple-500/40 text-purple-200 hover:bg-purple-500/20 transition text-sm font-medium"
+						>
+							Rechazar todas
+						</button>
+						<button
+							type="button"
+							class="js-cookies-close min-w-[150px] text-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white transition text-sm font-semibold shadow-lg shadow-purple-900/40"
+						>
+							Aceptar todas
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	@endguest
+
 	<script>
 		// Auto-ocultar notificaciones después de 4 segundos
 		document.addEventListener('DOMContentLoaded', function() {
@@ -213,6 +253,36 @@
 					}, 500);
 				}, 4000); // 4 segundos
 			});
+
+			const banner = document.getElementById('cookies-banner');
+
+			if (banner) {
+				const cookieName = 'levelupnexus_cookies_banner';
+				const cookieValue = document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`));
+
+				if (cookieValue) {
+					banner.remove();
+					return;
+				}
+
+				const buttons = banner.querySelectorAll('.js-cookies-close');
+
+				setTimeout(() => {
+					banner.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none');
+					banner.classList.add('opacity-100');
+				}, 200);
+
+				buttons.forEach(button => {
+					button.addEventListener('click', () => {
+						const expiryDate = new Date(Date.now() + 60 * 60 * 1000);
+						document.cookie = `${cookieName}=acknowledged; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+
+						banner.classList.remove('opacity-100');
+						banner.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none');
+						setTimeout(() => banner.remove(), 400);
+					});
+				});
+			}
 		});
 	</script>
 
