@@ -11,7 +11,7 @@ use Illuminate\View\View;
 class UserManagementController extends Controller
 {
     /**
-     * Display a paginated list of users with status information.
+     * Lista usuarios paginados aplicando filtros y orden por rol.
      */
     public function index(Request $request): View
     {
@@ -42,7 +42,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Toggle user active status.
+     * Alterna el estado activo de un usuario administrado.
      */
     public function toggle(User $user): RedirectResponse
     {

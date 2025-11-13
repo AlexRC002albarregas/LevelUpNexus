@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateGroupRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Verifica si el usuario puede actualizar los datos del grupo.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class UpdateGroupRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Establece las reglas de validación para la actualización del grupo.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */

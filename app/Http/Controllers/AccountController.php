@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 class AccountController extends Controller
 {
     /**
-     * Show the form for editing the account.
+     * Muestra el formulario de edición de la cuenta del usuario.
      */
     public function edit()
     {
@@ -17,7 +17,7 @@ class AccountController extends Controller
     }
 
     /**
-     * Update the account.
+     * Actualiza los datos básicos y de seguridad de la cuenta.
      */
     public function update(Request $request)
     {
@@ -72,7 +72,7 @@ class AccountController extends Controller
     }
 
     /**
-     * Delete the account.
+     * Elimina definitivamente la cuenta tras validar credenciales.
      */
     public function destroy(Request $request)
     {

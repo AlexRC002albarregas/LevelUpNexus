@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StorePostRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si el usuario autenticado puede crear la publicación.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StorePostRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Expone las reglas de validación para almacenar una publicación.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -35,7 +35,7 @@ class StorePostRequest extends FormRequest
     }
 
     /**
-     * Get custom error messages for validator.
+     * Configura los mensajes personalizados de validación.
      *
      * @return array<string, string>
      */

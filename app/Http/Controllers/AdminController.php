@@ -8,7 +8,7 @@ use App\Models\{User, Group, Post, Game};
 class AdminController extends Controller
 {
     /**
-     * Display the admin dashboard.
+     * Muestra el panel principal de administración con listados básicos.
      */
     public function index()
     {

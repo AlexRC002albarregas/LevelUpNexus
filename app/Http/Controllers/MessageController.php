@@ -8,7 +8,7 @@ use App\Models\{User, Message, Friendship};
 class MessageController extends Controller
 {
     /**
-     * Get messages with a friend.
+     * Recupera la conversación completa con un amigo.
      */
     public function index(User $friend)
     {
@@ -34,7 +34,7 @@ class MessageController extends Controller
     }
 
     /**
-     * Send a message to a friend.
+     * Envía un nuevo mensaje privado a un amigo.
      */
     public function store(Request $request, User $friend)
     {

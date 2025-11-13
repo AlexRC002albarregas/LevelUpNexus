@@ -9,13 +9,16 @@ class HomeController extends Controller
 {
     protected $newsApiService;
 
+    /**
+     * Inyecta el servicio responsable de obtener noticias externas.
+     */
     public function __construct(NewsApiService $newsApiService)
     {
         $this->newsApiService = $newsApiService;
     }
 
     /**
-     * Página de inicio
+     * Muestra la portada o el dashboard según el estado de sesión.
      */
     public function index()
     {

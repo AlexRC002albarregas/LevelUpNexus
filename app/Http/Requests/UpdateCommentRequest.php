@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateCommentRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determina si la persona autenticada puede modificar el comentario.
      */
     public function authorize(): bool
     {
@@ -16,7 +16,7 @@ class UpdateCommentRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Devuelve las reglas de validación para actualizar el comentario.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */

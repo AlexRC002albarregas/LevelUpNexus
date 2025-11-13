@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class GroupInvitationController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Crea y envía una invitación a un grupo para otro usuario.
      */
     public function store(Request $request, Group $group)
     {
@@ -65,7 +65,7 @@ class GroupInvitationController extends Controller
     }
 
     /**
-     * Accept invitation
+     * Acepta una invitación pendiente y añade al usuario al grupo.
      */
     public function accept(GroupInvitation $groupInvitation)
     {
@@ -107,7 +107,7 @@ class GroupInvitationController extends Controller
     }
 
     /**
-     * Decline invitation
+     * Rechaza una invitación recibida al grupo.
      */
     public function decline(GroupInvitation $groupInvitation)
     {
@@ -122,7 +122,7 @@ class GroupInvitationController extends Controller
     }
 
     /**
-     * Cancel invitation (by sender)
+     * Cancela una invitación enviada mientras esté pendiente.
      */
     public function cancel(GroupInvitation $groupInvitation)
     {
@@ -145,7 +145,7 @@ class GroupInvitationController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina por completo una invitación a un grupo.
      */
     public function destroy(GroupInvitation $groupInvitation)
     {

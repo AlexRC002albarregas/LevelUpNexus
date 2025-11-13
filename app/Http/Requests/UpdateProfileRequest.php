@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateProfileRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si se permite modificar el perfil.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class UpdateProfileRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Establece las reglas de validación para actualizar el perfil.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */

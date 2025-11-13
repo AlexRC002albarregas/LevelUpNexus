@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class GroupController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Lista los grupos a los que pertenece el usuario y sus invitaciones.
      */
     public function index()
     {
@@ -35,7 +35,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario de creación de grupos.
      */
     public function create()
     {
@@ -43,7 +43,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea un nuevo grupo y registra al usuario como propietario.
      */
     public function store(StoreGroupRequest $request)
     {
@@ -69,7 +69,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Muestra el detalle de un grupo controlando accesos y roles.
      */
     public function show(Group $group)
     {
@@ -128,7 +128,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario de edición de un grupo.
      */
     public function edit(Group $group)
     {
@@ -141,7 +141,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza la información y el avatar de un grupo.
      */
     public function update(UpdateGroupRequest $request, Group $group)
     {
@@ -168,7 +168,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un grupo tras validar permisos y limpiar recursos.
      */
     public function destroy(Group $group)
     {
@@ -190,7 +190,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Join group (accept invitation or join public group)
+     * Permite unirse a un grupo aceptando invitaciones o solicitudes.
      */
     public function join(Request $request, Group $group)
     {
@@ -216,7 +216,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Leave group
+     * Permite al usuario abandonar un grupo del que es miembro.
      */
     public function leave(Group $group)
     {
@@ -234,7 +234,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Change member role to moderator or back to member
+     * Cambia el rol de un miembro entre moderador y miembro.
      */
     public function changeMemberRole(Request $request, Group $group, $userId)
     {
@@ -264,7 +264,7 @@ class GroupController extends Controller
     }
 
     /**
-     * Kick member from group (owner and moderators)
+     * Expulsa a un miembro del grupo respetando las jerarquías.
      */
     public function kickMember(Group $group, $userId)
     {

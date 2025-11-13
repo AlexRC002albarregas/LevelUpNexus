@@ -9,13 +9,16 @@ class RawgController extends Controller
 {
     protected $rawgService;
 
+    /**
+     * Inyecta el servicio que interactúa con la API de RAWG.
+     */
     public function __construct(RawgService $rawgService)
     {
         $this->rawgService = $rawgService;
     }
 
     /**
-     * Test endpoint for RAWG API (temporal).
+     * Punto de prueba temporal para la API de RAWG.
      */
     public function test(Request $request)
     {
@@ -24,7 +27,7 @@ class RawgController extends Controller
     }
 
     /**
-     * Search games in RAWG API.
+     * Busca juegos en RAWG y adapta los datos al frontend.
      */
     public function search(Request $request)
     {
@@ -69,7 +72,7 @@ class RawgController extends Controller
     }
 
     /**
-     * Get popular games from RAWG API.
+     * Obtiene la lista de juegos populares desde RAWG.
      */
     public function popular()
     {
@@ -85,7 +88,7 @@ class RawgController extends Controller
     }
 
     /**
-     * Add a game to favorites.
+     * Añade un juego al listado de favoritos del usuario.
      */
     public function addFavorite(Request $request)
     {
@@ -108,7 +111,7 @@ class RawgController extends Controller
     }
 
     /**
-     * Remove a game from favorites.
+     * Elimina un juego del listado de favoritos del usuario.
      */
     public function removeFavorite(Request $request)
     {
@@ -128,7 +131,7 @@ class RawgController extends Controller
     }
 
     /**
-     * Get favorite games.
+     * Recupera juegos favoritos propios u ofrecidos por ID.
      */
     public function favorites(Request $request)
     {

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreGroupRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si el usuario puede crear un grupo.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StoreGroupRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Devuelve las reglas de validación para la creación del grupo.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -29,7 +29,7 @@ class StoreGroupRequest extends FormRequest
     }
 
     /**
-     * Get custom error messages for validator.
+     * Establece los mensajes personalizados de validación.
      *
      * @return array<string, string>
      */

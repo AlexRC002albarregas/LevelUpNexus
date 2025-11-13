@@ -8,7 +8,7 @@ use App\Models\{User, Friendship, Message};
 class FriendController extends Controller
 {
     /**
-     * Display a listing of friends.
+     * Muestra el listado de amistades y solicitudes pendientes.
      */
     public function index()
     {
@@ -37,7 +37,7 @@ class FriendController extends Controller
     }
 
     /**
-     * Send a friend request.
+     * Envía una solicitud de amistad al usuario indicado.
      */
     public function send(Request $request)
     {
@@ -70,7 +70,7 @@ class FriendController extends Controller
     }
 
     /**
-     * Accept a friend request.
+     * Acepta una solicitud de amistad recibida.
      */
     public function accept(Friendship $friendship)
     {
@@ -83,7 +83,7 @@ class FriendController extends Controller
     }
 
     /**
-     * Decline a friend request.
+     * Rechaza una solicitud de amistad recibida.
      */
     public function decline(Friendship $friendship)
     {
@@ -96,7 +96,7 @@ class FriendController extends Controller
     }
 
     /**
-     * Remove a friend.
+     * Elimina una amistad existente si pertenece al usuario.
      */
     public function destroy(Friendship $friendship)
     {

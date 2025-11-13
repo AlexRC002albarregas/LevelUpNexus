@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreReactionRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si el usuario está autorizado para registrar reacciones.
      */
     public function authorize(): bool
     {
@@ -15,14 +15,12 @@ class StoreReactionRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Define las reglas de validación para almacenar la reacción.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

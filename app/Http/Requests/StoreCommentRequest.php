@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreCommentRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si el usuario está autorizado para realizar la petición.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StoreCommentRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Devuelve las reglas de validación aplicables a la solicitud.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -28,7 +28,7 @@ class StoreCommentRequest extends FormRequest
     }
 
     /**
-     * Get custom error messages for validator.
+     * Define los mensajes personalizados para los errores de validación.
      *
      * @return array<string, string>
      */

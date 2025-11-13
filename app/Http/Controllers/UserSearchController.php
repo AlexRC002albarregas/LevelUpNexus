@@ -8,7 +8,7 @@ use App\Models\User;
 class UserSearchController extends Controller
 {
     /**
-     * Search users for autocomplete (friends and invitations).
+     * Busca usuarios para autocompletar en solicitudes y amistades.
      */
     public function search(Request $request)
     {

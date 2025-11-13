@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
     /**
-     * Get the count of unread notifications.
+     * Devuelve la cantidad de notificaciones sin leer del usuario.
      */
     public function count()
     {

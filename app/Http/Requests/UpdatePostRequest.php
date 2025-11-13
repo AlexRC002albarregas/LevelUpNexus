@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdatePostRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Comprueba si el usuario puede modificar la publicación.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class UpdatePostRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Define las reglas de validación para actualizar la publicación.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */

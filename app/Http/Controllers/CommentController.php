@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class CommentController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Guarda un nuevo comentario asociado a una publicación.
      */
     public function store(StoreCommentRequest $request)
     {
@@ -63,7 +63,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el contenido de un comentario existente.
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
@@ -77,7 +77,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un comentario si el usuario tiene permiso.
      */
     public function destroy(Comment $comment)
     {

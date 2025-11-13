@@ -15,9 +15,6 @@ class RawgService
         $this->apiKey = config('services.rawg.key');
     }
 
-    /**
-     * Buscar juegos por nombre
-     */
     public function searchGames($query, $page = 1, $pageSize = 10)
     {
         $cacheKey = "rawg_search_{$query}_{$page}_{$pageSize}";
@@ -38,9 +35,6 @@ class RawgService
         });
     }
 
-    /**
-     * Obtener detalles de un juego por ID
-     */
     public function getGameDetails($gameId)
     {
         $cacheKey = "rawg_game_{$gameId}";
@@ -58,9 +52,6 @@ class RawgService
         });
     }
 
-    /**
-     * Obtener juegos populares
-     */
     public function getPopularGames($page = 1, $pageSize = 20)
     {
         $cacheKey = "rawg_popular_{$page}_{$pageSize}";
@@ -81,9 +72,6 @@ class RawgService
         });
     }
 
-    /**
-     * Obtener información de múltiples juegos por sus IDs
-     */
     public function getGamesByIds($gameIds)
     {
         if (empty($gameIds)) {

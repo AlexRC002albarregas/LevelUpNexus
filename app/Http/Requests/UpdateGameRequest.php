@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateGameRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si se permite actualizar los datos del juego.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class UpdateGameRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Establece las reglas de validación para modificar el juego.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */

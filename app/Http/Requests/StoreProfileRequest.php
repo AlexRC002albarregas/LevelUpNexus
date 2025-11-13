@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreProfileRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si cualquier usuario puede crear un perfil.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StoreProfileRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Establece las reglas de validación para almacenar el perfil.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */

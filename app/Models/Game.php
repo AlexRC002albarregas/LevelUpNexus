@@ -20,6 +20,9 @@ class Game extends Model
         'released_date' => 'date',
     ];
 
+    /**
+     * Relación con el usuario propietario del juego.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

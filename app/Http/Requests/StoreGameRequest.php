@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreGameRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si el usuario está autorizado para enviar la solicitud.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StoreGameRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Devuelve las reglas de validación aplicables a la creación.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -36,7 +36,7 @@ class StoreGameRequest extends FormRequest
     }
 
     /**
-     * Get custom error messages for validator.
+     * Define los mensajes personalizados para las validaciones.
      *
      * @return array<string, string>
      */

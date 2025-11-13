@@ -15,11 +15,17 @@ class Message extends Model
         'is_read' => 'boolean',
     ];
 
+    /**
+     * Relación con el usuario que envía el mensaje.
+     */
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
+    /**
+     * Relación con el usuario que recibe el mensaje.
+     */
     public function receiver()
     {
         return $this->belongsTo(User::class, 'receiver_id');

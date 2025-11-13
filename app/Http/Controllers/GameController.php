@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class GameController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Lista los juegos del usuario aplicando filtros y ordenaciones.
      */
     public function index(Request $request)
     {
@@ -70,7 +70,7 @@ class GameController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario de creación de un juego.
      */
     public function create()
     {
@@ -78,7 +78,7 @@ class GameController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guarda un nuevo juego para el usuario autenticado.
      */
     public function store(StoreGameRequest $request)
     {
@@ -103,7 +103,7 @@ class GameController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Devuelve los datos de un juego concreto tras autorizar el acceso.
      */
     public function show(Game $game)
     {
@@ -112,7 +112,7 @@ class GameController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario de edición de un juego.
      */
     public function edit(Game $game)
     {
@@ -121,7 +121,7 @@ class GameController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza los campos de un juego existente.
      */
     public function update(UpdateGameRequest $request, Game $game)
     {
@@ -146,7 +146,7 @@ class GameController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un juego y responde según el tipo de petición.
      */
     public function destroy(Game $game)
     {

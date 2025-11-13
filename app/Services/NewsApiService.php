@@ -15,9 +15,6 @@ class NewsApiService
         $this->apiKey = config('services.newsapi.key');
     }
 
-    /**
-     * Obtener noticias de videojuegos
-     */
     public function getGamingNews($pageSize = 20)
     {
         try {

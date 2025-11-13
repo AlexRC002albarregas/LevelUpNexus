@@ -7,7 +7,7 @@ use App\Models\User;
 class UserController extends Controller
 {
     /**
-     * Display the specified user profile.
+     * Muestra el perfil público de un usuario según permisos.
      */
     public function show(User $user)
     {

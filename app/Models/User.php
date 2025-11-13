@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +12,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Atributos que se pueden asignar masivamente.
      *
      * @var array<int, string>
      */
@@ -30,7 +29,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Atributos que deben ocultarse en la serialización.
      *
      * @var array<int, string>
      */
@@ -40,7 +39,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Atributos que deben transformarse a tipos específicos.
      *
      * @var array<string, string>
      */
@@ -52,64 +51,97 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
+    /**
+     * Relación con el perfil extendido del usuario.
+     */
     public function profile()
     {
         return $this->hasOne(Profile::class);
     }
 
+    /**
+     * Relación con los juegos asociados al usuario.
+     */
     public function games()
     {
         return $this->hasMany(Game::class);
     }
 
+    /**
+     * Relación con las publicaciones creadas por el usuario.
+     */
     public function posts()
     {
         return $this->hasMany(Post::class);
     }
 
+    /**
+     * Relación con los comentarios realizados por el usuario.
+     */
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
 
+    /**
+     * Relación con las reacciones emitidas por el usuario.
+     */
     public function reactions()
     {
         return $this->hasMany(Reaction::class);
     }
 
+    /**
+     * Relación con los grupos en los que participa el usuario.
+     */
     public function groups()
     {
         return $this->belongsToMany(Group::class)->withPivot('member_role')->withTimestamps();
     }
 
+    /**
+     * Relación con los grupos que el usuario administra.
+     */
     public function ownedGroups()
     {
         return $this->hasMany(Group::class, 'owner_id');
     }
 
+    /**
+     * Determina si el usuario tiene rol de administrador.
+     */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
+    /**
+     * Comprueba si el usuario posee el rol indicado.
+     */
     public function hasRole(string $role): bool
     {
         return $this->role === $role;
     }
 
-    // Amistades: solicitudes enviadas
+    /**
+     * Relación con las solicitudes de amistad enviadas.
+     */
     public function sentFriendRequests()
     {
         return $this->hasMany(Friendship::class, 'user_id');
     }
 
-    // Amistades: solicitudes recibidas
+    /**
+     * Relación con las solicitudes de amistad recibidas.
+     */
     public function receivedFriendRequests()
     {
         return $this->hasMany(Friendship::class, 'friend_id');
     }
 
-    // Amigos aceptados (enviadas o recibidas con status accepted)
+    /**
+     * Devuelve la colección de amistades aceptadas.
+     */
     public function friends()
     {
         $sent = $this->sentFriendRequests()->where('status', 'accepted')->get()->pluck('friend_id');
@@ -117,37 +149,49 @@ class User extends Authenticatable
         return User::whereIn('id', $sent->merge($received))->get();
     }
 
-    // Solicitudes pendientes recibidas
+    /**
+     * Obtiene las solicitudes de amistad pendientes del usuario.
+     */
     public function pendingFriendRequests()
     {
         return $this->receivedFriendRequests()->where('status', 'pending')->with('sender')->get();
     }
 
-    // Mensajes enviados
+    /**
+     * Relación con los mensajes enviados por el usuario.
+     */
     public function sentMessages()
     {
         return $this->hasMany(Message::class, 'sender_id');
     }
 
-    // Mensajes recibidos
+    /**
+     * Relación con los mensajes recibidos por el usuario.
+     */
     public function receivedMessages()
     {
         return $this->hasMany(Message::class, 'receiver_id');
     }
 
-    // Mensajes no leídos
+    /**
+     * Calcula cuántos mensajes pendientes tiene el usuario.
+     */
     public function unreadMessagesCount()
     {
         return $this->receivedMessages()->where('is_read', false)->count();
     }
 
-    // Total de notificaciones (solicitudes + mensajes)
+    /**
+     * Suma las notificaciones pendientes del usuario.
+     */
     public function notificationsCount()
     {
         return $this->pendingFriendRequests()->count() + $this->unreadMessagesCount();
     }
 
-    // Invitaciones pendientes a grupos
+    /**
+     * Calcula cuántas invitaciones a grupos están pendientes.
+     */
     public function pendingGroupInvitationsCount()
     {
         return GroupInvitation::where('recipient_id', $this->id)
@@ -155,29 +199,29 @@ class User extends Authenticatable
             ->count();
     }
 
-    // Verificar si el usuario actual puede ver el perfil de otro usuario
+    /**
+     * Indica si el usuario puede visualizar el perfil indicado.
+     */
     public function canViewProfile(User $targetUser): bool
     {
-        // Si es el mismo usuario, siempre puede ver su propio perfil
         if ($this->id === $targetUser->id) {
             return true;
         }
 
-        // Si es admin, puede ver todos los perfiles
         if ($this->isAdmin()) {
             return true;
         }
 
-        // Si el perfil es público, todos pueden verlo
         if (!$targetUser->is_private) {
             return true;
         }
 
-        // Si el perfil es privado, verificar si son amigos
         return $this->isFriendWith($targetUser);
     }
 
-    // Verificar si dos usuarios son amigos
+    /**
+     * Comprueba si existe una amistad aceptada con el usuario dado.
+     */
     public function isFriendWith(User $user): bool
     {
         return Friendship::where(function($query) use ($user) {

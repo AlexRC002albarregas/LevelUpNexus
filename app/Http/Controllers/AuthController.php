@@ -11,7 +11,7 @@ use Illuminate\Validation\Rules\Password;
 class AuthController extends Controller
 {
     /**
-     * Show login form
+     * Muestra el formulario de inicio de sesión.
      */
     public function showLoginForm()
     {
@@ -19,7 +19,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Show registration form
+     * Muestra el formulario de registro.
      */
     public function showRegisterForm()
     {
@@ -27,7 +27,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle login request (web)
+     * Gestiona el inicio de sesión tanto para peticiones web como API.
      */
     public function login(Request $request)
     {
@@ -73,7 +73,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle registration request (web)
+     * Registra un nuevo usuario y devuelve respuesta según el canal.
      */
     public function register(Request $request)
     {
@@ -117,7 +117,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle logout request
+     * Cierra la sesión del usuario actual en web o API.
      */
     public function logout(Request $request)
     {

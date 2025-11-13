@@ -18,6 +18,9 @@ class Profile extends Model
         'achievements' => 'array',
     ];
 
+    /**
+     * Relación con el usuario propietario del perfil.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

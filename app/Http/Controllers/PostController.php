@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Genera el feed de publicaciones visibles para el usuario.
      */
     public function index()
     {
@@ -78,7 +78,7 @@ class PostController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear una publicación.
      */
     public function create()
     {
@@ -86,7 +86,7 @@ class PostController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guarda una nueva publicación y gestiona archivos adjuntos.
      */
     public function store(StorePostRequest $request)
     {
@@ -119,7 +119,7 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Muestra el detalle de una publicación verificando permisos.
      */
     public function show(Post $post)
     {
@@ -157,7 +157,7 @@ class PostController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario de edición de una publicación.
      */
     public function edit(Post $post)
     {
@@ -173,7 +173,7 @@ class PostController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza los datos y archivos de una publicación existente.
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
@@ -202,7 +202,7 @@ class PostController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una publicación si el usuario está autorizado.
      */
     public function destroy(Post $post)
     {

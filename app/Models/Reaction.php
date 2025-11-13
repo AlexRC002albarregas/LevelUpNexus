@@ -13,11 +13,17 @@ class Reaction extends Model
         'user_id', 'reactable_id', 'reactable_type', 'type'
     ];
 
+    /**
+     * Relación con el usuario que generó la reacción.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Relación polimórfica con el recurso reaccionado.
+     */
     public function reactable()
     {
         return $this->morphTo();

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class ReactionController extends Controller
 {
     /**
-     * Toggle reaction on a post (like/unlike)
+     * Alterna o actualiza la reacción del usuario sobre un post.
      */
     public function toggle(Request $request, Post $post)
     {
@@ -82,7 +82,7 @@ class ReactionController extends Controller
     }
 
     /**
-     * Remove reaction
+     * Elimina una reacción concreta si el usuario tiene permiso.
      */
     public function destroy(Reaction $reaction)
     {

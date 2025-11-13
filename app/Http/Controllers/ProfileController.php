@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Gate;
 class ProfileController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Lista perfiles paginados y admite respuestas JSON.
      */
     public function index()
     {
@@ -26,15 +26,14 @@ class ProfileController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Prepararía el formulario de creación de perfiles (no implementado).
      */
     public function create()
     {
-        //
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea un nuevo perfil asociado al usuario autenticado.
      */
     public function store(StoreProfileRequest $request)
     {
@@ -44,7 +43,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Muestra un perfil individual en web o API.
      */
     public function show(Profile $profile)
     {
@@ -59,7 +58,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar el perfil propio.
      */
     public function edit()
     {
@@ -68,7 +67,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza los datos del perfil tras validar permisos.
      */
     public function update(UpdateProfileRequest $request, Profile $profile)
     {
@@ -78,7 +77,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un perfil concreto si el usuario está autorizado.
      */
     public function destroy(Profile $profile)
     {

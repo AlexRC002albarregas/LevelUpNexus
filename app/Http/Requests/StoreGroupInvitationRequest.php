@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreGroupInvitationRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Indica si el usuario puede enviar la invitación.
      */
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StoreGroupInvitationRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Define las reglas de validación que se aplican a la invitación.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -27,7 +27,7 @@ class StoreGroupInvitationRequest extends FormRequest
     }
 
     /**
-     * Get custom error messages for validator.
+     * Establece los mensajes de error personalizados.
      *
      * @return array<string, string>
      */
