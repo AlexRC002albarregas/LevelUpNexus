@@ -21,7 +21,7 @@
 		.notification-badge { animation: pulse-glow 2s ease-in-out infinite; }
 	</style>
 </head>
-<body class="min-h-screen text-white flex flex-col">
+<body class="min-h-screen text-white flex flex-col overflow-x-hidden">
 	<header class="backdrop-blur-lg bg-slate-900/80 border-b border-purple-500/30 sticky top-0 z-[100]">
 		<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 			<a href="{{ route('landing') }}" class="flex items-center gap-3 group">
