@@ -9,6 +9,51 @@
 			</a>
 		</div>
 
+		<div class="mb-8">
+			<form method="GET" action="{{ route('posts.index') }}" class="p-3 bg-slate-900/60 border border-purple-500/30 rounded-xl backdrop-blur-sm grid gap-3 md:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] items-end text-xs">
+				<div>
+					<label for="sort" class="font-semibold text-purple-200 block mb-1 uppercase tracking-wide">
+						<i class="fas fa-history text-[10px]"></i> Ordenar
+					</label>
+					<select 
+						id="sort" 
+						name="sort" 
+						class="w-full bg-slate-950/60 border border-purple-500/40 rounded-lg px-2.5 py-1.5 text-xs text-purple-100 focus:border-purple-400 focus:ring-1 focus:ring-purple-500/40 transition"
+					>
+						<option value="recent" {{ ($currentSort ?? 'recent') === 'recent' ? 'selected' : '' }}>Más recientes</option>
+						<option value="oldest" {{ ($currentSort ?? 'recent') === 'oldest' ? 'selected' : '' }}>Más antiguas</option>
+					</select>
+				</div>
+				<div>
+					<label for="game" class="font-semibold text-purple-200 block mb-1 uppercase tracking-wide">
+						<i class="fas fa-layer-group text-[10px]"></i> Categoría
+					</label>
+					<select 
+						id="game" 
+						name="game" 
+						class="w-full bg-slate-950/60 border border-purple-500/40 rounded-lg px-2.5 py-1.5 text-xs text-purple-100 focus:border-purple-400 focus:ring-1 focus:ring-purple-500/40 transition"
+					>
+						<option value="">Todas</option>
+						@foreach($availableGames ?? [] as $gameName)
+							<option value="{{ $gameName }}" {{ ($currentGame ?? '') === $gameName ? 'selected' : '' }}>
+								{{ $gameName }}
+							</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="flex gap-2">
+					<button type="submit" class="flex-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-semibold transition">
+						<i class="fas fa-filter"></i> Filtrar
+					</button>
+					@if(request()->has('sort') || request()->has('game'))
+						<a href="{{ route('posts.index') }}" class="px-3 py-1.5 rounded-lg border border-purple-500/40 text-purple-200 text-xs font-semibold hover:bg-purple-500/10 transition text-center">
+							Reiniciar
+						</a>
+					@endif
+				</div>
+			</form>
+		</div>
+
 		<div class="space-y-12">
 			@forelse($posts as $post)
 				<div class="max-w-3xl mx-auto w-full">
@@ -233,7 +278,7 @@
 		</div>
 
 		<div class="mt-8">
-			{{ $posts->links() }}
+			{{ $posts->appends(request()->query())->links() }}
 		</div>
 	</div>
 

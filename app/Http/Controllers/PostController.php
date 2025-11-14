@@ -15,7 +15,7 @@ class PostController extends Controller
     /**
      * Genera el feed de publicaciones visibles para el usuario.
      */
-    public function index()
+    public function index(Request $request)
     {
         $currentUser = auth()->user();
         $userId = auth()->id();
@@ -37,7 +37,7 @@ class PostController extends Controller
         
         // Filtrar publicaciones según visibilidad del post y perfil del autor
         // Excluir publicaciones de grupo (group_id no null)
-        $posts = Post::with(['user', 'group', 'game', 'reactions.user', 'comments.user'])
+        $postsQuery = Post::with(['user', 'group', 'game', 'reactions.user', 'comments.user'])
             ->whereNull('group_id') // Solo publicaciones generales, no de grupos
             ->where(function($query) use ($userId, $friendIds) {
                 // 1. Propias publicaciones (siempre visibles)
@@ -65,16 +65,57 @@ class PostController extends Controller
                                 $userQ->whereIn('id', $friendIds);
                             });
                     });
+            });
+
+        // Construir listado de juegos disponibles para filtro
+        $availableGames = (clone $postsQuery)
+            ->select('id', 'game_title', 'game_id')
+            ->with(['game:id,title'])
+            ->where(function($query) {
+                $query->whereNotNull('game_title')
+                    ->orWhereNotNull('game_id');
             })
-            ->orderByDesc('id')
-            ->paginate(10);
+            ->get()
+            ->map(function($post) {
+                return $post->game_title ?: optional($post->game)->title;
+            })
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        // Filtro por categoría (juego)
+        if ($request->filled('game')) {
+            $selectedGame = $request->input('game');
+            $postsQuery->where(function($query) use ($selectedGame) {
+                $query->where('game_title', $selectedGame)
+                    ->orWhereHas('game', function($gameQuery) use ($selectedGame) {
+                        $gameQuery->where('title', $selectedGame);
+                    });
+            });
+        }
+
+        // Filtro por antigüedad
+        $sort = $request->input('sort', 'recent');
+        if ($sort === 'oldest') {
+            $postsQuery->orderBy('created_at', 'asc');
+        } else {
+            $postsQuery->orderBy('created_at', 'desc');
+        }
+
+        $posts = $postsQuery->paginate(10)->withQueryString();
         
         // Ordenar comentarios por fecha (más recientes primero) para cada post
         foreach($posts as $post) {
             $post->comments = $post->comments->sortByDesc('created_at')->values();
         }
         
-        return view('posts.index', compact('posts'));
+        return view('posts.index', [
+            'posts' => $posts,
+            'availableGames' => $availableGames,
+            'currentSort' => $sort,
+            'currentGame' => $request->input('game'),
+        ]);
     }
 
     /**
