@@ -34,7 +34,7 @@
                 <p class="text-sm text-blue-300">Mis grupos</p>
             </a>
 
-            <a href="{{ route('games.index') }}" class="p-6 rounded-xl bg-gradient-to-br from-green-600/30 to-green-800/30 border border-green-500/50 hover:border-green-400 transition group">
+            <a href="{{ route('games.web.index') }}" class="p-6 rounded-xl bg-gradient-to-br from-green-600/30 to-green-800/30 border border-green-500/50 hover:border-green-400 transition group">
                 <div class="text-4xl mb-3 text-green-400 group-hover:scale-110 transition">
                     <i class="fas fa-gamepad"></i>
                 </div>

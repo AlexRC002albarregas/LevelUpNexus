@@ -44,7 +44,7 @@
 							<span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center notification-badge">{{ $notifCount }}</span>
 						@endif
 					</a>
-					<a href="{{ route('games.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-gamepad"></i> Mis Juegos</a>
+					<a href="{{ route('games.web.index') }}" class="hover:text-purple-400 transition"><i class="fas fa-gamepad"></i> Mis Juegos</a>
 					<a href="{{ route('groups.index') }}" class="hover:text-purple-400 transition relative">
 						<i class="fas fa-users"></i> Grupos
 						@php
@@ -159,7 +159,7 @@
 					<h4 class="text-purple-200 font-semibold uppercase tracking-wide mb-4 text-xs">Explorar</h4>
 					<ul class="space-y-2 text-purple-300/80">
 						<li><a href="{{ route('posts.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-newspaper mr-2 text-purple-400/80"></i>Publicaciones</a></li>
-						<li><a href="{{ route('games.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-gamepad mr-2 text-purple-400/80"></i>Mi Biblioteca</a></li>
+						<li><a href="{{ route('games.web.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-gamepad mr-2 text-purple-400/80"></i>Mi Biblioteca</a></li>
 						<li><a href="{{ route('groups.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-users mr-2 text-purple-400/80"></i>Grupos</a></li>
 						<li><a href="{{ route('friends.index') }}" class="hover:text-purple-200 transition"><i class="fas fa-user-friends mr-2 text-purple-400/80"></i>Amigos</a></li>
 					</ul>

@@ -13,10 +13,10 @@
 			Intenta volver a añadirlo o revisa tus filtros para seguir jugando.
 		</p>
 		<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-			<a href="{{ route('games.index') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-purple-500/40 text-purple-100 hover:bg-purple-500/10 transition">
+			<a href="{{ route('games.web.index') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-purple-500/40 text-purple-100 hover:bg-purple-500/10 transition">
 				<i class="fas fa-book"></i> Ver mi biblioteca
 			</a>
-			<a href="{{ route('games.create') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-semibold text-white transition glow">
+			<a href="{{ route('games.web.create') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-semibold text-white transition glow">
 				<i class="fas fa-plus"></i> Añadir un juego
 			</a>
 		</div>

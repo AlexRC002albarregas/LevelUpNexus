@@ -60,12 +60,12 @@ Route::get('/rawg/favorites', [\App\Http\Controllers\RawgController::class, 'fav
 
 // Juegos
 Route::middleware('auth:web')->group(function(){
-    Route::get('/games', [\App\Http\Controllers\GameController::class, 'index'])->name('games.index');
-    Route::get('/games/create', [\App\Http\Controllers\GameController::class, 'create'])->name('games.create');
-    Route::post('/games', [\App\Http\Controllers\GameController::class, 'store'])->name('games.store');
-    Route::get('/games/{game}/edit', [\App\Http\Controllers\GameController::class, 'edit'])->name('games.edit');
-    Route::put('/games/{game}', [\App\Http\Controllers\GameController::class, 'update'])->name('games.update');
-    Route::delete('/games/{game}', [\App\Http\Controllers\GameController::class, 'destroy'])->name('games.destroy');
+    Route::get('/games', [\App\Http\Controllers\GameController::class, 'index'])->name('games.web.index');
+    Route::get('/games/create', [\App\Http\Controllers\GameController::class, 'create'])->name('games.web.create');
+    Route::post('/games', [\App\Http\Controllers\GameController::class, 'store'])->name('games.web.store');
+    Route::get('/games/{game}/edit', [\App\Http\Controllers\GameController::class, 'edit'])->name('games.web.edit');
+    Route::put('/games/{game}', [\App\Http\Controllers\GameController::class, 'update'])->name('games.web.update');
+    Route::delete('/games/{game}', [\App\Http\Controllers\GameController::class, 'destroy'])->name('games.web.destroy');
 });
 
 // Publicaciones (CRUD completo)

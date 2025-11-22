@@ -14,7 +14,7 @@
 			<nav class="flex items-center gap-4">
 				<a href="{{ route('landing') }}" class="hover:text-indigo-600">Inicio</a>
 				<a href="{{ route('profiles.web.index') }}" class="hover:text-indigo-600">Perfiles</a>
-				<a href="{{ route('games.index') }}" class="hover:text-indigo-600">Juegos</a>
+				<a href="{{ route('games.web.index') }}" class="hover:text-indigo-600">Juegos</a>
 				<a href="{{ route('groups.index') }}" class="hover:text-indigo-600">Grupos</a>
 				@auth
 					<form method="POST" action="{{ route('auth.logout') }}">

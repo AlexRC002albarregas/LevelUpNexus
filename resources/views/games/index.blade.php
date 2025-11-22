@@ -6,7 +6,7 @@
 		</h1>
 		
 		<!-- Filtros -->
-		<form method="GET" action="{{ route('games.index') }}" class="flex gap-3 items-end ml-auto">
+		<form method="GET" action="{{ route('games.web.index') }}" class="flex gap-3 items-end ml-auto">
 			<div>
 				<label class="block text-xs text-purple-300 mb-1 font-semibold">
 					<i class="fas fa-sort"></i> Ordenar por
@@ -33,7 +33,7 @@
 			
 			@if(request('sort') || request('genre'))
 				<a 
-					href="{{ route('games.index') }}" 
+					href="{{ route('games.web.index') }}" 
 					class="w-12 h-12 flex items-center justify-center rounded-xl bg-red-600/20 border border-red-500 hover:bg-red-600/40 transition text-red-200 text-lg shadow-sm shadow-red-900/40" 
 					title="Limpiar filtros"
 					aria-label="Limpiar filtros"
@@ -43,7 +43,7 @@
 			@endif
 		</form>
 		
-		<a href="{{ route('games.create') }}" class="px-5 py-3 rounded-lg bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 font-bold glow transition whitespace-nowrap">
+		<a href="{{ route('games.web.create') }}" class="px-5 py-3 rounded-lg bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 font-bold glow transition whitespace-nowrap">
 			<i class="fas fa-plus"></i> Añadir juego
 		</a>
 	</div>
@@ -83,7 +83,7 @@
 					<span class="font-semibold">{{ $g->hours_played }}</span> horas jugadas
 				</div>
 				<div class="flex gap-2 mt-auto">
-					<a href="{{ route('games.edit',$g) }}" class="flex-1 text-center px-4 py-2 rounded-lg bg-purple-600/20 border border-purple-500 hover:bg-purple-600/40 transition">
+					<a href="{{ route('games.web.edit',$g) }}" class="flex-1 text-center px-4 py-2 rounded-lg bg-purple-600/20 border border-purple-500 hover:bg-purple-600/40 transition">
 						<i class="fas fa-edit"></i> Editar
 					</a>
 					<button type="button" onclick="openDeleteGameModal({{ $g->id }}, '{{ addslashes($g->title) }}')" class="px-4 py-2 rounded-lg bg-red-600/20 border border-red-500 hover:bg-red-600/40 transition">
@@ -101,7 +101,7 @@
 			</div>
 			<h2 class="text-2xl font-bold text-purple-100 mb-2">Aún no hay juegos aquí</h2>
 			<p class="text-purple-300 mb-6 max-w-xl mx-auto">Tu biblioteca está vacía por ahora. Explora por los juegos de nuestro catálogo y empieza a construirla para llevar el control de tus horas jugadas y plataformas.</p>
-			<a href="{{ route('games.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold transition">
+			<a href="{{ route('games.web.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold transition">
 				<i class="fas fa-plus"></i> Añadir mi primer juego
 			</a>
 		</div>

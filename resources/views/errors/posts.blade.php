@@ -16,7 +16,7 @@
 			<a href="{{ route('posts.index') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-purple-500/40 text-purple-100 hover:bg-purple-500/10 transition">
 				<i class="fas a-newspaper"></i> Volver al feed
 			</a>
-			<a href="{{ route('games.index') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-semibold text-white transition glow">
+			<a href="{{ route('games.web.index') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-semibold text-white transition glow">
 				<i class="fas fa-gamepad"></i> Ir a mis juegos
 			</a>
 		</div>

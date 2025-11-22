@@ -4,7 +4,7 @@
 			<h1 class="text-4xl font-black bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
 				<i class="fas fa-edit"></i> Editar Juego
 			</h1>
-			<a href="{{ route('games.index') }}" class="px-5 py-3 rounded-lg bg-slate-800 border border-purple-500/50 hover:bg-purple-500/20 text-purple-300 transition">
+			<a href="{{ route('games.web.index') }}" class="px-5 py-3 rounded-lg bg-slate-800 border border-purple-500/50 hover:bg-purple-500/20 text-purple-300 transition">
 				<i class="fas fa-arrow-left"></i> Volver
 			</a>
 		</div>
@@ -29,7 +29,7 @@
 			</div>
 		@endif
 
-		<form id="editGameForm" method="POST" action="{{ route('games.update', $game) }}" class="space-y-4 p-6 rounded-xl bg-slate-800/50 border border-purple-500/30 backdrop-blur-sm">
+		<form id="editGameForm" method="POST" action="{{ route('games.web.update', $game) }}" class="space-y-4 p-6 rounded-xl bg-slate-800/50 border border-purple-500/30 backdrop-blur-sm">
 			@csrf
 			@method('PUT')
 			
@@ -83,7 +83,7 @@
 			</div>
 			
 			<div class="flex gap-3 pt-4">
-				<a href="{{ route('games.index') }}" class="px-6 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-bold transition">
+				<a href="{{ route('games.web.index') }}" class="px-6 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-bold transition">
 					<i class="fas fa-times"></i> Cancelar
 				</a>
 				<button type="submit" class="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-bold glow transition">
@@ -121,7 +121,7 @@
 				const data = await res.json();
 				
 				if(res.ok) {
-					window.location.href = '{{ route("games.index") }}';
+					window.location.href = '{{ route("games.web.index") }}';
 				} else {
 					alert('Error: ' + (data.message || 'Error al actualizar el juego'));
 					submitBtn.disabled = false;

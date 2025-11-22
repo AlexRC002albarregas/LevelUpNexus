@@ -99,7 +99,7 @@ class GameController extends Controller
         }
         
         // Si no, redirigir a la lista de juegos
-        return redirect()->route('games.index')->with('status', 'Juego añadido correctamente');
+        return redirect()->route('games.web.index')->with('status', 'Juego añadido correctamente');
     }
 
     /**
@@ -142,7 +142,7 @@ class GameController extends Controller
 		}
 		
 		// Si no, redirigir a la lista de juegos
-		return redirect()->route('games.index')->with('status', 'Juego actualizado correctamente');
+		return redirect()->route('games.web.index')->with('status', 'Juego actualizado correctamente');
     }
 
     /**
@@ -159,6 +159,6 @@ class GameController extends Controller
 		}
 		
 		// Si no, redirigir a la lista de juegos
-		return redirect()->route('games.index')->with('status', 'Juego eliminado correctamente');
+		return redirect()->route('games.web.index')->with('status', 'Juego eliminado correctamente');
     }
 }
