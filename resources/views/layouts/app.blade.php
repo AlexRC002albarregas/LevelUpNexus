@@ -13,7 +13,7 @@
 			<a href="{{ route('landing') }}" class="font-bold text-xl">LevelUp <span class="text-indigo-600">Nexus</span></a>
 			<nav class="flex items-center gap-4">
 				<a href="{{ route('landing') }}" class="hover:text-indigo-600">Inicio</a>
-				<a href="{{ route('profiles.index') }}" class="hover:text-indigo-600">Perfiles</a>
+				<a href="{{ route('profiles.web.index') }}" class="hover:text-indigo-600">Perfiles</a>
 				<a href="{{ route('games.index') }}" class="hover:text-indigo-600">Juegos</a>
 				<a href="{{ route('groups.index') }}" class="hover:text-indigo-600">Grupos</a>
 				@auth

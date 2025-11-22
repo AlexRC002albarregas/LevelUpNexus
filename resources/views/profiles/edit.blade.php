@@ -36,7 +36,7 @@
 		const fd = new FormData(form);
 		const res = await fetch(form.action,{method: form.querySelector('input[name="_method"]')?.value==='PUT'?'POST':'POST', body: fd});
 		if(res.ok){
-			location.href = '{{ route('profiles.index') }}';
+			location.href = '{{ route('profiles.web.index') }}';
 		}else{
 			alert('Error guardando el perfil');
 		}

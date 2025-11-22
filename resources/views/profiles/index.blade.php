@@ -2,7 +2,7 @@
 	<h1 class="text-2xl font-bold mb-6">Perfiles</h1>
 	<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 		@foreach($profiles as $p)
-			<a href="{{ route('profiles.show',$p) }}" class="p-4 rounded-xl border bg-white hover:shadow">
+			<a href="{{ route('profiles.web.show',$p) }}" class="p-4 rounded-xl border bg-white hover:shadow">
 				<div class="flex items-center gap-3">
 					<img src="{{ $p->avatar ?? 'https://via.placeholder.com/64' }}" class="w-12 h-12 rounded-full object-cover" />
 					<div>

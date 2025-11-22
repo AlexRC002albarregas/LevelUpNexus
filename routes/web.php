@@ -25,8 +25,8 @@ Route::middleware('auth:web')->group(function(){
 });
 
 // Perfiles (legacy)
-Route::get('/profiles', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profiles.index');
-Route::get('/profiles/{profile}', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profiles.show');
+Route::get('/profiles', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profiles.web.index');
+Route::get('/profiles/{profile}', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profiles.web.show');
 Route::middleware('auth:web')->group(function(){
     Route::get('/me/profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profiles.edit');
 });
