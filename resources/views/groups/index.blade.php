@@ -19,8 +19,8 @@
 				</h3>
 				<div class="space-y-3">
 					@foreach($pendingInvitations as $invitation)
-						<div class="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-yellow-500/30 card-hover">
-							<div class="flex items-center gap-3">
+						<div class="flex items-center justify-between gap-6 p-4 rounded-xl bg-slate-800/50 border border-yellow-500/30 card-hover">
+							<div class="flex items-center gap-3 flex-1 min-w-0">
 								<div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-xl border-2 border-purple-400 overflow-hidden">
 									@if($invitation->group->avatar)
 										<img src="{{ asset('storage/' . $invitation->group->avatar) }}" class="w-full h-full object-cover" alt="{{ $invitation->group->name }}">
@@ -35,7 +35,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex gap-2">
+							<div class="flex gap-2 flex-shrink-0">
 								<form method="POST" action="{{ route('group-invitations.accept', $invitation) }}">
 									@csrf
 									<button class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold transition glow-sm">
